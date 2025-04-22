@@ -5,59 +5,62 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Model">
+    <Filter Include="src">
       <UniqueIdentifier>{5653940e-2ebc-4ef9-90e9-3dc58b024cb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Model\Source Files">
+    <Filter Include="src\Model">
+      <UniqueIdentifier>{95bdefbb-6d7d-4c07-b7be-5db17e5a0c01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Model\CPP">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Model\Header Files">
+    <Filter Include="src\Model\Headers">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Controller">
+    <Filter Include="src\Controller">
       <UniqueIdentifier>{8ebe8ae4-a880-46fd-b5f8-06ebb36a73c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="View">
+    <Filter Include="src\View">
       <UniqueIdentifier>{9a86c3b9-3e67-4b5f-9fa0-bb4b776d5de4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>Model\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Edge.cpp">
-      <Filter>Model\Source Files</Filter>
+      <Filter>src\Model\CPP</Filter>
     </ClCompile>
     <ClCompile Include="Graph.cpp">
-      <Filter>Model\Source Files</Filter>
+      <Filter>src\Model\CPP</Filter>
     </ClCompile>
     <ClCompile Include="Manager.cpp">
-      <Filter>Model\Source Files</Filter>
+      <Filter>src\Model\CPP</Filter>
     </ClCompile>
     <ClCompile Include="Node.cpp">
-      <Filter>Model\Source Files</Filter>
+      <Filter>src\Model\CPP</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp">
-      <Filter>Model\Source Files</Filter>
+      <Filter>src\Model\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>src\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edge.h">
-      <Filter>Model\Header Files</Filter>
+      <Filter>src\Model\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Graph.h">
-      <Filter>Model\Header Files</Filter>
+      <Filter>src\Model\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Manager.h">
-      <Filter>Model\Header Files</Filter>
+      <Filter>src\Model\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
-      <Filter>Model\Header Files</Filter>
+      <Filter>src\Model\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Path.h">
-      <Filter>Model\Header Files</Filter>
+      <Filter>src\Model\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
