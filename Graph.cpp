@@ -56,40 +56,24 @@ int Graph::getID() {
 int Graph::numberOfGraphs = 0;
 
 
-//vector<string> Graph::BFS(string name) {
-//	//Route({child, front.second}) = front.first
-//	//q(child, parent)
-//	queue<pair<string, string>> q;
-//	unordered_map<string, bool> visited;
-//
-//	pair <string, string> ans;
-//	vector<string> result;
-//
-//	// Node* node = getNode(name);
-//	q.push({nullptr, name});
-//	visited[name] = true;
-//	while (!q.empty()) {
-//		pair front = q.front();
-//		q.pop();
-//		if (front.second == name) {
-//			ans = front;
-//			break;
-//		}
-//
-//		for (auto child : cities[name]->neighbours) {
-//			if (visited[child] == 1) continue;
-//			visited[child] = true;
-//			q.push({front.second, child});
-//			Route[{child, front.second}] = front.first;
-//		}
-//	}
-//
-//	//make the path
-//	while (ans.second != nullptr) {
-//		int previous_node = Route[{ans.second, ans.first}];
-//		ans = {ans.first, previous_node};
-//		result.push_back(previous_node);
-//	}
-//
-//	return result;
-//}
+vector<string> Graph::BFS(string name) {
+	queue<string> q;
+	unordered_map<string, bool> visited;
+
+	vector<string> result;
+	q.push(name);
+	visited[name] = true;
+	while (!q.empty()) {
+		string front = q.front();
+		q.pop();
+		result.push_back(front);
+
+		for (auto child : cities[name]->neighbours) {
+			if (visited[child] == 1) continue;
+			visited[child] = 1;
+			q.push(child);
+		}
+	}
+	return result;
+}
+

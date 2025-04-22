@@ -18,11 +18,6 @@ public:
 	unordered_map<string, Node*> cities;
 	unordered_map<string, Edge*> roads;
 
-
-	unordered_map<Node*, vector<Node*>> AdjacentList;
-	//Route({child, front.second}) = front.first
-	map<pair<string, string>, string> Route;
-
 	string name;
 	Graph(string name);
 	void addCity(string name);
