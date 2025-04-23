@@ -1,5 +1,10 @@
 ﻿  Application.cpp
-  Graph.cpp
-  Manager.cpp
+  Node.cpp
   Generating Code...
+x64\Debug\Application.obj : warning LNK4042: object specified more than once; extras ignored
+x64\Debug\Edge.obj : warning LNK4042: object specified more than once; extras ignored
+x64\Debug\Graph.obj : warning LNK4042: object specified more than once; extras ignored
+x64\Debug\Manager.obj : warning LNK4042: object specified more than once; extras ignored
+x64\Debug\Node.obj : warning LNK4042: object specified more than once; extras ignored
+x64\Debug\Path.obj : warning LNK4042: object specified more than once; extras ignored
   Mini-Waslni.vcxproj -> C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\x64\Debug\Mini-Waslni.exe
