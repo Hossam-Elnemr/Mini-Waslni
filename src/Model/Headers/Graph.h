@@ -30,5 +30,5 @@ public:
 
 	//							Getters-Setters & Testing
 	int getID();
-	void test();
+	static void test();
 };
