@@ -1,4 +1,3 @@
-#pragma once
 # include <vector>
 # include <unordered_map>
 # include "Path.h"
@@ -7,7 +6,8 @@ using namespace std;
 class Graph {
 	Node* getNode(string name);
 	Edge* getEdge(string name);
-	bool validate();
+	bool cityIsFound(std::string);
+	bool EdgeIsFound(std::string);
 	int id;
 public:
 	Graph(string name);
@@ -31,4 +31,10 @@ public:
 	//							Getters-Setters & Testing
 	int getID();
 	static void test();
+
+
+	//							Operators
+	Node* & operator [](string name) {
+		return cities[name];
+	}
 };
