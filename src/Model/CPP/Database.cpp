@@ -11,6 +11,12 @@ Database& Database::getInstance() {
 	return instance;
 }
 
+const ChildsContainer& Model::Database::getChildsOfNode(int node)
+{
+	//validate
+	return graphList[node];
+}
+
 
 void Database::clean()
 {

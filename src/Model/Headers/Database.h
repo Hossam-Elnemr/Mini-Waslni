@@ -9,12 +9,14 @@ namespace Model {
 	*/
 
 	class Database {
-		static DynamicList graphList; // Declare the container as a static pointer  
+		static DynamicList graphList;  
 
 		Database();
 	public:
 
 		static Database& getInstance();
+		static const ChildsContainer& getChildsOfNode(int id);
+		
 
 
 

@@ -4,6 +4,8 @@
 #include "../Model/Headers/Globals.h"
 #include "../Model/Headers/GraphManager.h"
 #include "../Model/Headers/CitiesMapperID.h"
+#include "../Model/Headers/PathFinder.h"
+
 
 #include "../View/GraphManagerView.h"
 #include "../Model/Headers/Database.h"

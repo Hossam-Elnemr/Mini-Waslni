@@ -27,13 +27,18 @@ void Controller::GraphManagerController::pathFinding()
 	//validate it
 	//.....
 
+	Model::PathFinder pathFinder(fromId, toId);
+	vector<string> path;
+	double distance;
 
-	
+	tie(path, distance) = pathFinder.findPath();
 
-
-
-
-	 
+	if (distance == -1) { // path not found
+	}
+	else {
+		View::PathPrinter pathPrinter;
+		pathPrinter.printPath(path, distance);
+	}
 }
 
 Controller::GraphManagerController::~GraphManagerController()
