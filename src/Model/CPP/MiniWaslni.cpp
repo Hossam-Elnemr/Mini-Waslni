@@ -31,10 +31,6 @@ void MiniWaslni::close()
 		graphManagerController = nullptr;
 	}
 
-	if (mapper != nullptr) {
-		delete mapper;
-		mapper = nullptr;
-	}
 }
 
 

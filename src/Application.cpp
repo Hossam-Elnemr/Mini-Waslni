@@ -1,7 +1,7 @@
 # include <iostream>
-#include "Manager.h"
-using namespace std;
+#include "Model/Headers/MiniWaslni.h"
 int main() {
-	Manager m = Manager();
-	Graph::test();
+	MiniWaslni app;
+	app.run();
+	//cout << "Hello";
 }

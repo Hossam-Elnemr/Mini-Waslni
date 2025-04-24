@@ -23,7 +23,7 @@ namespace Model {
 		CitiesMapperID(const CitiesMapperID&) = delete;
 		CitiesMapperID(const CitiesMapperID&&) = delete;
 		//CitiesMapperID& operator=(const CitiesMapperID&) = delete;
-
+		
 	};
 }
 #endif

@@ -3,6 +3,11 @@
 using namespace Model;
 map<string, int> CitiesMapperID::cityToIdx;
 map<int, string> CitiesMapperID::idxToCity;
+set<int> CitiesMapperID::unusedIdx;
+
+CitiesMapperID::CitiesMapperID() {
+	cout << "Headers::CitiesMapperID Constructor" << endl;
+}
 
 string CitiesMapperID::getCityById(int id)  noexcept(false) {
 	string cityName = "Not Founded";
