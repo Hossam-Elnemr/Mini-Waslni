@@ -1,4 +1,3 @@
-#pragma once
 # include<iostream>
 # include "Node.h"
 # include<string>
@@ -11,6 +10,7 @@ public:
 	static int numberofEdges;
 	bool directed;
 	Edge(Node* src, Node* dest, std::string name, int length, bool directed);
+	~Edge();
 	void setGraphid(int graphId);
 	double trafficCost();
 	double lengthCost();
