@@ -20,6 +20,6 @@ Graph* Manager::getGraph(std::string name) {
 int Manager::totalCities() {
 	int sum = 0;
 	for (auto graph : graphs)
-		sum += (int)graph->cities.size();
+		sum += (int)graph->nodes.size();
 	return sum;
 }
