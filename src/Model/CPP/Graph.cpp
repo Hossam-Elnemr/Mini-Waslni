@@ -28,8 +28,8 @@ void Graph::addNode(string name) {
 }
 
 void Graph::addEdge(string name, string src, string dest, int length, bool directed) {
-	if (!nodeIsFound(src) || !nodeIsFound(dest) || edgeIsFound(name))
-		return std::cout << "Error!!\nEnter a new edge name between two existing nodes!\n", void();
+	if (src == dest || !nodeIsFound(src) || !nodeIsFound(dest) || edgeIsFound(name))
+		return std::cout << "Error!!\nEnter a new edge name between two different existing nodes!\n", void();
 
 
 	Node* source = getNode(src);
