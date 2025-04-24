@@ -1,13 +1,15 @@
 # include <vector>
 # include <unordered_map>
+# include <map>
 # include "Path.h"
 # include <queue>
 using namespace std;
 class Graph {
 	Node* getNode(string name);
 	Edge* getEdge(string name);
-	bool cityIsFound(std::string);
-	bool EdgeIsFound(std::string);
+
+	bool nodeIsFound(std::string);
+	bool edgeIsFound(std::string);
 	int id;
 public:
 	Graph(string name);
@@ -15,12 +17,14 @@ public:
 	string name;
 	double totalTraffic;
 
-	unordered_map<string, Node*> cities;
-	unordered_map<string, Edge*> roads;
+	map<string, Node*> nodes;
+	map<string, Edge*> edges;
 
 	//								  Modify graph
-	void addCity(string name);
+	void addNode(string name);
 	void addEdge(string name, string src, string dest, int length, bool directed);
+	void deleteNode(string name);
+	void deleteEdge(string name);
 
 	//									Traverse
 	pair<Path, double> shortestPath(string source, string destination);
@@ -31,10 +35,10 @@ public:
 	//							Getters-Setters & Testing
 	int getID();
 	static void test();
-
+	string to_string();
 
 	//							Operators
 	Node* & operator [](string name) {
-		return cities[name];
+		return nodes[name];
 	}
 };
