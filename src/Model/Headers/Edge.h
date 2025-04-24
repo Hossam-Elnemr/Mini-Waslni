@@ -1,4 +1,5 @@
 # include<iostream>
+#include "Globals.h"
 # include "Node.h"
 # include<string>
 class Edge {

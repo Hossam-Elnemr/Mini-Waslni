@@ -1,3 +1,7 @@
+#ifndef MANAGER_H
+#define MANAGER_H
+
+
 # include "Graph.h"
 # include <string>
 # include <iostream>
@@ -16,3 +20,4 @@ public:
 		return instance;
 	}
 };
+#endif

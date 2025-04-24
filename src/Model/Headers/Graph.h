@@ -1,3 +1,6 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+#include "Globals.h"
 # include <vector>
 # include <unordered_map>
 # include <map>
@@ -42,3 +45,4 @@ public:
 		return nodes[name];
 	}
 };
+#endif

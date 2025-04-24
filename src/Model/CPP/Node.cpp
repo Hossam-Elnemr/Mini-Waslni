@@ -1,5 +1,6 @@
+//# include "Model/Headers/Node.h"
 # include<iostream>
-# include "Node.h"
+# include "../Headers/Node.h"
 using namespace std;
 int Node::numberOfNodes = 0;
 Node::Node(string name) {
@@ -8,7 +9,7 @@ Node::Node(string name) {
 }
 string Node::to_string() const noexcept {
 	string str = "ID: " + std::to_string(id) + "\nName: " + name + "\nNeighbours: ";
-	for (auto i : neighbours)
+	for (auto &i : neighbours)
 		str += i + ' ';
 	return str;
 }

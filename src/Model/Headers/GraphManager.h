@@ -1,10 +1,11 @@
 #pragma once
 #ifndef GRAPH_MANAGER_H
 #define GRAPH_MANAGER_H
-
+#include "Globals.h"
 namespace Model {
 	//This class To handle the graph operations.
 	class GraphManager {
+		
 	public:
 		GraphManager() = default;
 
@@ -13,12 +14,10 @@ namespace Model {
 		void addEdge();
 		void removeGraph();
 		void removeCity();
+		void pathFinding();
 
 		~GraphManager();
-	}
+	};
 }
-
-
-
 
 #endif

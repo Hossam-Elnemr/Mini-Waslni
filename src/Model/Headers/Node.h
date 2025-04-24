@@ -1,4 +1,5 @@
 #pragma once
+#include "Globals.h"
 # include<iostream>
 # include<string>
 # include<set>
