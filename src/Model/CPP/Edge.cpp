@@ -15,3 +15,7 @@ double Edge::trafficCost() {
 	return 0.0;
 	/*return length*(1 + trafficLoad/graphs[graphId].traffic);*/
 }
+
+Edge::~Edge() {
+	//	DO NOT DELETE SOURCE & DESTINATION
+}
