@@ -8,13 +8,13 @@ namespace View{
 	public:
 		GraphManagerView() = default;
 
-		void getGraphInfo();
+		pair< vector<string>, vector<tuple<string, string, int, bool> > > getGraphInfo();
 		void getCityInfo();
 		void getEdgeInfo();
 		void showGraph();
 		void showPath();
 		pair<string, string> getPathFindingInfo();
-		
+		int showMenu(vector<string> menu);
 		~GraphManagerView();
 	};
 

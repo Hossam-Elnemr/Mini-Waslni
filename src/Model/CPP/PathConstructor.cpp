@@ -15,5 +15,5 @@ vector<string> Model::PathConstructor::constructPath(int from, int to, const uno
 		to = it->second;
     }
 	reverse(path.begin(), path.end());
-    return vector<string>();
+    return path;
 }

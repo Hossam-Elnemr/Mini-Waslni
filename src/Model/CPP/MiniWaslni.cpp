@@ -1,6 +1,5 @@
 #include "../Headers/MiniWaslni.h"
 
-
 MiniWaslni::MiniWaslni()
 {
 	init();
@@ -9,7 +8,18 @@ MiniWaslni::MiniWaslni()
 void MiniWaslni::run()
 {
 	cout << "Welcome to Mini Waslni Application\n";
-	graphManagerController->pathFinding();
+	int choice;
+
+	do {
+		choice = graphManagerController->showMenu();
+		if (choice == 1) {
+			graphManagerController->addGraph();
+		}
+		else if (choice == 6) {
+			graphManagerController->pathFinding();
+		}
+	} while (choice != 7);
+
 	
 }
 

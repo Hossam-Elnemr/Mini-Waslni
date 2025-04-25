@@ -7,6 +7,25 @@ Controller::GraphManagerController::GraphManagerController()
 	cout << "GraphManagerController Constructor" << endl;
 }
 
+void Controller::GraphManagerController::addGraph()
+{
+	vector<string> cities;
+	vector<tuple<string, string, int ,bool>> edges;
+	tie(cities, edges) = graphManagerView->getGraphInfo();
+
+	for (const auto &city : cities) {
+		graphManager->addCity(city);
+	}
+
+	for (const auto& edge : edges) {
+		string src, dest;
+		int length;
+		bool isDirected;
+		tie(src, dest, length , isDirected) = edge;
+		graphManager->addEdge(src, dest, length , isDirected);
+	}
+}
+
 
 void Controller::GraphManagerController::pathFinding()
 {
@@ -28,17 +47,32 @@ void Controller::GraphManagerController::pathFinding()
 	//.....
 
 	Model::PathFinder pathFinder(fromId, toId);
-	vector<string> path;
-	double distance;
+	/*vector<string> path;
+	double distance;*/
 
-	tie(path, distance) = pathFinder.findPath();
+	pair<vector<string> , double> ret = pathFinder.findPath();
 
-	if (distance == -1) { // path not found
+	if (ret.second == -1) { // path not found
+		cout << "Path Not Found\n";
 	}
 	else {
 		View::PathPrinter pathPrinter;
-		pathPrinter.printPath(path, distance);
+		pathPrinter.printPath(ret.first , ret.second);
 	}
+}
+
+int Controller::GraphManagerController::showMenu()
+{
+	vector<string> menu = { "1: Add Graph\n",
+		"2: Add City\n",
+		"3: Add Edge\n",
+		"4: Remove Graph\n",
+		"5: Remove City\n",
+		"6: Path Finding\n",
+		"7: Exit\n" };
+
+	int choice = graphManagerView->showMenu(menu);
+	return choice;
 }
 
 Controller::GraphManagerController::~GraphManagerController()

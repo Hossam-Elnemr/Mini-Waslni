@@ -27,6 +27,8 @@ namespace Controller {
 		void removeCity();
 		void pathFinding();
 
+		int showMenu();
+
 		~GraphManagerController();
 	};
 }

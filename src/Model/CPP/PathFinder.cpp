@@ -3,7 +3,7 @@ using namespace Model;
 
 Model::PathFinder::PathFinder(int from, int to) : from(from), to(to) {}
 
-pair<vector<string>, double>& PathFinder::findPath()
+pair<vector<string>, double> PathFinder::findPath()
 {
 	unordered_map<int, double> distances;
 	unordered_map<int, int> parent;
@@ -26,12 +26,12 @@ pair<vector<string>, double>& PathFinder::findPath()
 			break;
 		}
 
-		if (distances.find(currentNode) != distances.end())
+		if (distances.find(currentNode) != distances.end() && weight > distances[currentNode])
 			continue;
 
 		for (const auto& childs : Model::Database::getInstance().getChildsOfNode(currentNode)) {
 			double newDist = distances[currentNode] + childs.second; 
-			if (newDist < distances[childs.first]) {
+			if (distances.find(childs.first) == distances.end() || newDist < distances[childs.first]) {
 				distances[childs.first] = newDist;
 				parent[childs.first] = currentNode;
 				pq.push({ -newDist, childs.first });
@@ -44,7 +44,8 @@ pair<vector<string>, double>& PathFinder::findPath()
 		ret = { {}, -1 };
 	else {
 		Model::PathConstructor pathConstructor;
-		ret = { pathConstructor.constructPath(from, to, parent) , distances[to] };
+		vector<string> path = pathConstructor.constructPath(from, to, parent);
+		ret = { path , distances[to] };
 	}
 	return ret;
 }

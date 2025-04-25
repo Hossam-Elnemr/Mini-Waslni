@@ -16,7 +16,8 @@ namespace Model {
 
 		static Database& getInstance();
 		static const ChildsContainer& getChildsOfNode(int id);
-		
+		static void addCity(int cityID);
+		static void addEdge(int from, int to, int weight , bool isDirected);
 
 
 

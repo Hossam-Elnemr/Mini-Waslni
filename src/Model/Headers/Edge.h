@@ -1,3 +1,5 @@
+#ifndef EDGE_H
+#define EDGE_H
 # include<iostream>
 #include "Globals.h"
 # include "Node.h"
@@ -16,3 +18,4 @@ public:
 	double trafficCost();
 	double lengthCost();
 };
+#endif

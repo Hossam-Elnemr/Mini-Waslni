@@ -14,7 +14,7 @@ namespace Model {
 	public:
 		PathFinder(int from, int to);
 
-		pair<vector<string>, double>& findPath();
+		pair<vector<string>, double> findPath();
 	};
 
 }

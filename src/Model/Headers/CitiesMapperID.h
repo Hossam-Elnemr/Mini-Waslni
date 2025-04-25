@@ -13,7 +13,7 @@ namespace Model {
 	public:
 		static string getCityById(int id) noexcept(false);
 		static int getIdByCity(string city) noexcept(false);
-		static void mapCity(string city);
+		static int mapCity(string city);
 		static int getCurrentEmptyIdx();
 
 		static void deleteCity(string city);

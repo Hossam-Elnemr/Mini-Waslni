@@ -38,11 +38,12 @@ int CitiesMapperID::getIdByCity(string city)  noexcept(false) {
 	return id;
 }
 
-void Model::CitiesMapperID::mapCity(string city)
+int Model::CitiesMapperID::mapCity(string city)
 {
 	int id = unusedIdx.empty() ? idxToCity.size() : *unusedIdx.begin();
 	cityToIdx[city] = id;
 	idxToCity[id] = city;	
+	return id;
 }
 
 int CitiesMapperID::getCurrentEmptyIdx() {
