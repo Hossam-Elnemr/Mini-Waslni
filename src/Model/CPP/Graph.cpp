@@ -1,4 +1,4 @@
-# include "../Headers/Graph.h"
+# include "Graph.h"
 int Graph::numberOfGraphs = 0;
 using namespace std;
 
