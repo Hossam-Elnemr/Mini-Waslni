@@ -1,4 +1,4 @@
-# include "../Headers/Edge.h"
+# include "Edge.h"
 # include <string>
 int Edge::numberofEdges = 0;
 Edge::Edge(Node* src, Node* dest, std::string name, int length, bool directed) : source(src), destination(dest),
