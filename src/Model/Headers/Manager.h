@@ -1,5 +1,5 @@
-#ifndef MANAGER_H
-#define MANAGER_H
+// #ifndef MANAGER_H
+// #define MANAGER_H
 
 
 # include "Graph.h"
@@ -20,4 +20,4 @@ public:
 		return instance;
 	}
 };
-#endif
+// #endif
