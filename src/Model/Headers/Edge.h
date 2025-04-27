@@ -1,9 +1,10 @@
-#ifndef EDGE_H
-#define EDGE_H
+// #ifndef EDGE_H
+// #define EDGE_H
 # include<iostream>
-#include "Globals.h"
+// #include "Globals.h"
 # include "Node.h"
 # include<string>
+using namespace std;
 class Edge {
 public:
 	Node* source, * destination;
@@ -18,4 +19,4 @@ public:
 	double trafficCost();
 	double lengthCost();
 };
-#endif
+// #endif
