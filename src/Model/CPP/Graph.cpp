@@ -114,7 +114,62 @@ vector<string> Graph::BFS(string name) {
 	return result;
 }
 
+pair<Path, double> Graph::shortestPath(string source, string distenation) {
+	if (!nodeIsFound(source) || !nodeIsFound(distenation))
+		return cout << "node not found!\nEnter a valid node.\n", pair<Path, double>();
+	Path path;
 
+	vector<string> result;
+	unordered_map<string, bool> vistied;
+	unordered_map<string, double> distance;
+	unordered_map<string, string> parent;
+
+	priority_queue<pair<double, string>, vector<pair<double, string>>, greater<pair<double, string>>> pq;
+	pq.push({ 0, source });
+
+	distance[source] = 0;
+	vistied[source] = true;
+
+	while (!pq.empty()) {
+		string node = pq.top().second;
+		pq.pop();
+		result.push_back(node);
+		for (auto edge : nodes[node]->neighbours) {
+			if (node == edges[edge]->source->name) {
+				if (vistied[edges[edge]->destination->name] == 1) continue;
+				double newDistance = distance[node] + edges[edge]->trafficCost();
+				if (distance.find(edges[edge]->destination->name) == distance.end() || newDistance < distance[edges[edge]->destination->name]) {
+					distance[edges[edge]->destination->name] = newDistance;
+					parent[edges[edge]->destination->name] = node;
+					pq.push({ newDistance, edges[edge]->destination->name });
+				}
+			}
+			else if (!edges[edge]->directed) {
+				if (vistied[edges[edge]->source->name] == 1) continue;
+				double newDistance = distance[node] + edges[edge]->trafficCost();
+				if (distance.find(edges[edge]->source->name) == distance.end() || newDistance < distance[edges[edge]->source->name]) {
+					distance[edges[edge]->source->name] = newDistance;
+					parent[edges[edge]->source->name] = node;
+					pq.push({ newDistance, edges[edge]->source->name });
+				}
+			}
+		}
+	}
+
+	if (distance.find(distenation) == distance.end())
+		return cout << "Path not found!\n", pair<Path, double>();
+
+	double totalDistance = distance[distenation];
+	string current = distenation;
+	while (current != source) {
+		path.Path_Nodes.push_back(current);
+		current = parent[current];
+	}
+
+	path.Path_Nodes.push_back(source);
+	reverse(path.Path_Nodes.begin(), path.Path_Nodes.end());
+	return { path, totalDistance };
+}
 
 
 Node* Graph::getNode(string name) {
