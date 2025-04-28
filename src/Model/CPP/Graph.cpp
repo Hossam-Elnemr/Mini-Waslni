@@ -1,6 +1,5 @@
-# include "Graph.h"
+# include "../Headers/Graph.h"
 int Graph::numberOfGraphs = 0;
-using namespace std;
 
 Graph::Graph(string name) {
 	this->name = name;

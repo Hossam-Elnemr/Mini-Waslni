@@ -1,7 +1,4 @@
-# include "Manager.h"
-# include <string>
-# include <iostream>
-using namespace std;
+# include "../Headers/Manager.h"
 
 int Manager::graphsCounter = 0;
 Manager* Manager::instance = nullptr;
