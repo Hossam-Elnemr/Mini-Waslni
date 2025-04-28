@@ -1,19 +1,20 @@
 # include "Path.h"
 class Graph {
+	int id;
+
 	Node* getNode(string name);
 	Edge* getEdge(string name);
 
 	bool nodeIsFound(std::string);
 	bool edgeIsFound(std::string);
-	int id;
 public:
-	Graph(string name);
-	static int numberOfGraphs;
 	string name;
+	static int numberOfGraphs;
 	double totalTraffic;
-
 	map<string, Node*> nodes;
 	map<string, Edge*> edges;
+
+	Graph(string name);
 
 	//								  Modify graph
 	void addNode(string name);
@@ -25,10 +26,12 @@ public:
 	pair<Path, double> shortestPath(string source, string destination);
 	pair<Path, double> fastestPath(string source, string destination);
 	vector<string> DFS(string name);
+	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> BFS(string name);
 
 	//							Getters-Setters & Testing
 	int getID();
+	double getTotalTraffic();
 	static void test();
 	string to_string();
 
