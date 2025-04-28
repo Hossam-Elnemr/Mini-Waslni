@@ -1,21 +1,20 @@
 # include "../Headers/Graph.h"
+#include "../Headers/Globals.h"
 int Graph::numberOfGraphs = 0;
 
 Graph::Graph(string name) {
 	this->name = name;
 	id = numberOfGraphs++;
+	totalTraffic = 0;
 }
-
 //								Validations
 
-bool Graph::nodeIsFound(std::string name) {
+bool Graph::nodeIsFound(string name) {
 	return nodes.find(name) != nodes.end();
 }
-bool Graph::edgeIsFound(std::string name) {
+bool Graph::edgeIsFound(string name) {
 	return edges.find(name) != edges.end();
 }
-
-
 
 //								  Modify
 void Graph::addNode(string name) {
@@ -25,7 +24,6 @@ void Graph::addNode(string name) {
 	Node* newnode = new Node(name);
 	nodes[newnode->name] = newnode;
 }
-
 void Graph::addEdge(string name, string src, string dest, int length, bool directed) {
 	if (src == dest || !nodeIsFound(src) || !nodeIsFound(dest) || edgeIsFound(name))
 		return std::cout << "Error!!\nEnter a new edge name between two different existing nodes!\n", void();
@@ -46,7 +44,6 @@ void Graph::addEdge(string name, string src, string dest, int length, bool direc
 		std::cout << dest << " -> " << src << '\n';
 	}
 }
-
 void Graph::deleteNode(string name) {
 	if (!nodeIsFound(name))
 		return cout << "node not found!\n", void();
@@ -64,7 +61,6 @@ void Graph::deleteNode(string name) {
 	delete deletednode;
 	nodes.erase(name);
 }
-
 void Graph::deleteEdge(string name) {
 	if (!edgeIsFound(name))
 		return cout << "Road not found!\n", void();
@@ -79,8 +75,6 @@ void Graph::deleteEdge(string name) {
 	delete edge;
 	edges.erase(name);
 }
-
-
 
 //								Traverse
 vector<string> Graph::BFS(string name) {
@@ -113,8 +107,88 @@ vector<string> Graph::BFS(string name) {
 	}
 	return result;
 }
+vector<string> Graph::DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities) {
+	if (!nodeIsFound(name)) {
+		cout << "City not found!\n";
+		return cities;
+	}
 
+	visited[name] = true;
+	cities.push_back(name);
+	for (auto edge : nodes[name]->neighbours) {
+		string city;
+		if (name == edges[edge]->source->name)
+			city = edges[edge]->destination->name;
+		else
+			city = edges[edge]->source->name;
+		if (!visited[city]) {
+			DFS(city,visited,cities);
+		}
+	}
+	return cities;
+}
+vector<string> Graph::DFS(string start) {
+	vector<string> cities;
+	unordered_map<string, bool> visited;
+	return DFS(start, visited, cities);
+}
 
+pair<Path, double> Graph::shortestPath(string source, string distenation) {
+	if (!nodeIsFound(source) || !nodeIsFound(distenation))
+		return cout << "node not found!\nEnter a valid node.\n", pair<Path, double>();
+	Path path;
+
+	vector<string> result;
+	unordered_map<string, bool> vistied;
+	unordered_map<string, double> distance;
+	unordered_map<string, string> parent;
+
+	priority_queue<pair<double, string>, vector<pair<double, string>>, greater<pair<double, string>>> pq;
+	pq.push({ 0, source });
+
+	distance[source] = 0;
+	vistied[source] = true;
+
+	while (!pq.empty()) {
+		string node = pq.top().second;
+		pq.pop();
+		result.push_back(node);
+		for (auto edge : nodes[node]->neighbours) {
+			if (node == edges[edge]->source->name) {
+				if (vistied[edges[edge]->destination->name] == 1) continue;
+				double newDistance = distance[node] + edges[edge]->trafficCost();
+				if (distance.find(edges[edge]->destination->name) == distance.end() || newDistance < distance[edges[edge]->destination->name]) {
+					distance[edges[edge]->destination->name] = newDistance;
+					parent[edges[edge]->destination->name] = node;
+					pq.push({ newDistance, edges[edge]->destination->name });
+				}
+			}
+			else if (!edges[edge]->directed) {
+				if (vistied[edges[edge]->source->name] == 1) continue;
+				double newDistance = distance[node] + edges[edge]->trafficCost();
+				if (distance.find(edges[edge]->source->name) == distance.end() || newDistance < distance[edges[edge]->source->name]) {
+					distance[edges[edge]->source->name] = newDistance;
+					parent[edges[edge]->source->name] = node;
+					pq.push({ newDistance, edges[edge]->source->name });
+				}
+			}
+		}
+	}
+
+	if (distance.find(distenation) == distance.end())
+		return cout << "Path not found!\n", pair<Path, double>();
+
+	double totalDistance = distance[distenation];
+	string current = distenation;
+	while (current != source) {
+		path.Path_Nodes.push_back(current);
+		current = parent[current];
+	}
+
+	path.Path_Nodes.push_back(source);
+	reverse(path.Path_Nodes.begin(), path.Path_Nodes.end());
+	return { path, totalDistance };
+}
 
 
 Node* Graph::getNode(string name) {
@@ -123,9 +197,17 @@ Node* Graph::getNode(string name) {
 Edge* Graph::getEdge(string name) {
 	return edges[name];
 }
-
 int Graph::getID() {
 	return id;
+}
+
+double Graph::getTotalTraffic() {
+	totalTraffic = 0;
+	for (auto edge: edges )
+	{
+		totalTraffic += edge.second->trafficLoad;
+	}
+	return totalTraffic;
 }
 
 string Graph::to_string() {
@@ -160,18 +242,27 @@ void Graph::test() {
 	g->addEdge("fourth edge", "Matrouh", "Cairo", 4, true);
 	g->addEdge("third edge", "Alex", "Aswan", 4, false);
 	cout << '\n';
+	
 	cout << g->to_string();
 
-	g->deleteNode("Cairo");
+	//g->deleteNode("Cairo");
 
 	cout << "########\n\n";
 	cout << g->to_string();
 	
 	vector <string> v;
-	string start = "Matrouh";
+	string start = "Giza";
 	v = g->BFS(start);
 	std::cout << "\n\nFirst Test:\nSource is " << start << '\n';
 	for(int i = 0; i < v.size(); i++) {
+		cout << v[i];
+		if (i != v.size() - 1)
+			cout << " -> ";
+	}
+	cout << "\n##############";
+	v = g->DFS(start);
+	std::cout << "\n\nFirst Test:\nSource is " << start << '\n';
+	for (int i = 0; i < v.size(); i++) {
 		cout << v[i];
 		if (i != v.size() - 1)
 			cout << " -> ";
