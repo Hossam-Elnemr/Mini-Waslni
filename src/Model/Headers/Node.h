@@ -1,9 +1,4 @@
-// #include "Globals.h"
-# include<iostream>
-# include<string>
-# include<set>
-# include<unordered_map>
-using namespace std;
+# include "Globals.h"
 class Node {
 public:
 	string name;
@@ -12,7 +7,7 @@ public:
 	~Node();
 	set<string> neighbours;
 	//vector<Edge*> edges;
-	void addNeighbour(string name) ;
-	string to_string() const noexcept;
+	void addNeighbour(string name);
+	string to_string();
 	static int numberOfNodes;
 };
