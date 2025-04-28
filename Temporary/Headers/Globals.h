@@ -15,4 +15,5 @@
 #include <limits>
 #include <cmath>
 #include <stdexcept>
+#include<stack>
 using namespace std;
