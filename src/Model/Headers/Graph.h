@@ -1,12 +1,4 @@
-// #ifndef GRAPH_H
-// #define GRAPH_H
-// #include "Globals.h"
-# include <vector>
-# include <unordered_map>
-# include <map>
 # include "Path.h"
-# include <queue>
-using namespace std;
 class Graph {
 	Node* getNode(string name);
 	Edge* getEdge(string name);
@@ -41,8 +33,7 @@ public:
 	string to_string();
 
 	//							Operators
-	Node* & operator [](string name) {
+	Node*& operator [](string name) {
 		return nodes[name];
 	}
 };
-// #endif
