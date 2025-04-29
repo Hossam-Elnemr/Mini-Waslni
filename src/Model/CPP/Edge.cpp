@@ -1,7 +1,7 @@
-# include "../Headers/Edge.h"
+# include "Edge.h"
 # include <string>
 int Edge::numberofEdges = 0;
-Edge::Edge(Node* src, Node* dest, std::string name, int length, bool directed) : source(src), destination(dest),
+Edge::Edge(string name, string src, string dest, int length, bool directed) : source(src), destination(dest),
 name(name), length(length), trafficLoad(0), directed(directed) {
 	id = numberofEdges++;
 }
