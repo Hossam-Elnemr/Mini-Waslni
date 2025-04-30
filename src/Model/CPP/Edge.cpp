@@ -11,6 +11,9 @@ void Edge::setGraphid(int graphid) {
 double Edge::lengthCost() {
 	return length;
 }
+string Edge::to_string() const {
+	return  name + "," + source + "," + destination + "," + std::to_string(length) + "," + std::to_string(directed);
+}
 double Edge::trafficCost() {
 	return 0.0;
 	/*return length*(1 + trafficLoad/graphs[graphId].traffic);*/

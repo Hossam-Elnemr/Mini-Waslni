@@ -7,9 +7,9 @@ Node::Node(string name) {
 	cout << name << '\n';
 }
 string Node::to_string() const noexcept{
-	string str = "Name: " + name + "\nNeighbours: ";
+	string str = name + ",";
 	for (auto& i : neighbours)
-		str += i.first + ' ';
+		str += i + ',';
 	return str;
 }
 Node::~Node() {

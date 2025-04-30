@@ -1,6 +1,8 @@
 #pragma once
 # include<string>
 #include<unordered_map>
+#include<unordered_set>
+
 using namespace std;
 class Node {
 public:
@@ -8,6 +10,6 @@ public:
 	int graphId;
 	Node(std::string name);
 	~Node();
-	unordered_map<string, bool> neighbours;
+	unordered_set<string> neighbours;
 	string to_string() const noexcept;
 };

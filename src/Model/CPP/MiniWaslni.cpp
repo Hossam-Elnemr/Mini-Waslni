@@ -10,8 +10,7 @@ void MiniWaslni::run()
 	cout << "Welcome to Mini Waslni Application\n";
 	int choice;
 
-	do {
-		choice = graphManagerController->showMenu();
+	do {		choice = graphManagerController->showMenu();
 		if (choice == 1) {
 			graphManagerController->addGraph();
 		}

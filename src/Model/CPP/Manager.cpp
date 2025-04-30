@@ -1,7 +1,7 @@
 # include "../Headers/Manager.h"
 
 int Manager::graphsCounter = 0;
-Manager* Manager::instance = nullptr;
+Manager Manager::instance;
 
 Manager::Manager() {
 	

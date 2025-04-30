@@ -22,9 +22,9 @@ class Graph {
 	stack <tuple<int, string, vector<Edge>>> lastOperations;
 public:
 	Graph(string name);
+	Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges); // to load graph data from file
 	static int numberOfGraphs;
 	string name;
-	double totalTraffic;
 
 	unordered_map<string, Node*> nodes;
 	unordered_map<string, Edge*> edges;
@@ -37,19 +37,20 @@ public:
 	void undo();
 
 	//									Traverse
-	Path shortestPath(string source, string destination);
-	Path fastestPath(string src, string dest);
+	//Path shortestPath(string source, string destination);
+	//Path fastestPath(string src, string dest);
+
 	vector<string> DFS(string name);
 	vector<string> BFS(string name);
 
 	//							Getters-Setters & Testing
 	int getID();
+	void setID(int id);
 	static void test();
-	string to_string();
 
-	//							Operators
-	Node*& operator [](string name) {
-		return nodes[name];
-	}
+	///num of graphs ->static num
+	//-> line every graph {id::name::toStringNode::toStringEdges}
+
+	string toString();
 };
 #endif

@@ -6,6 +6,25 @@ Graph::Graph(string name) {
 	this->name = name;
 	id = numberOfGraphs++;
 }
+Graph::Graph(int id , string name ,const vector<vector<string>>& nodes , const vector<vector<string>>& edges) {
+	this->id = id;
+	this->name = name;
+	for (int i = 0; i < (int)nodes.size(); ++i) {
+		Node* newNode = new Node(nodes[i][0]);
+		
+		for (int j = 1; j < nodes[i].size(); ++j) 
+			newNode->neighbours.insert(nodes[i][j]);
+
+		this->nodes[nodes[i][0]] = newNode;
+	}
+
+	for (auto& i : edges) {
+		Edge* newedge = new Edge(i[0], i[1], i[2], std::stod(i[3]), std::stoi(i[4]));
+		this->edges[newedge->name] = newedge;
+	}
+
+	numberOfGraphs++;
+}
 
 //								Validations
 
@@ -138,36 +157,41 @@ vector<string> Graph::BFS(string name) {
 	return result;
 }
 
-
-Path Graph::fastestPath(string src, string dest) {
-
-	priority_queue<pair<double, string>> pq;
-	unordered_map<string, double> mincost;
-	unordered_map<string, string> parent;
-	Path path;
-	pq.push({ 0,src });
-	while (!pq.empty()) {
-		auto [cost, node] = pq.top();
-		pq.pop();
-		if (mincost[node] && -cost > mincost[node]) continue;
-		for (auto [edge, boole] : nodes[node]->neighbours) {
-			string next_node = edges[edge]->destination;
-			double cur_cost = -cost + edges[edge]->length;
-			if (!mincost[next_node] || cur_cost < mincost[next_node]) {
-				pq.push({ -cur_cost, next_node });
-				mincost[next_node] = cur_cost;
-				parent[next_node] = edge;
-			}
-		}
-	}
-	while (parent[dest] != "") {
-		path.Path_Edges.push_back(parent[dest]);
-		dest = edges[parent[dest]]->source;
-	}
-	path.total_lengthCost = mincost[dest];
-	reverse(path.Path_Edges.begin(), path.Path_Edges.end());
-	return path;
-}
+//
+//Path Graph::fastestPath(string src, string dest) {
+//
+//	priority_queue<pair<double, string>> pq;
+//	unordered_map<string, double> mincost;
+//	unordered_map<string, string> parent;
+//	Path path;
+//	pq.push({ 0,src });
+//	while (!pq.empty()) {
+//		auto [cost, node] = pq.top();
+//		pq.pop();
+//		if (mincost[node] && -cost > mincost[node]) continue;
+//		for (auto [edge, boole] : nodes[node]->neighbours) {
+//			string next_node = edges[edge]->destination;
+//
+//			double cur_cost = -cost + edges[edge]->length;
+//			
+//			if (!mincost[next_node] || cur_cost < mincost[next_node]) {
+//				pq.push({ -cur_cost, next_node });
+//				mincost[next_node] = cur_cost;
+//				parent[next_node] = edge;
+//			}
+//
+//		}
+//	}
+//
+//	while (parent[dest] != "") {
+//		path.Path_Edges.push_back(parent[dest]);
+//		dest = edges[parent[dest]]->source;
+//	}
+//
+//	path.totalCost = mincost[dest];
+//	reverse(path.Path_Edges.begin(), path.Path_Edges.end());
+//	return path;
+//}
 
 Node* Graph::getNode(string name) {
 	return nodes[name];
@@ -180,15 +204,10 @@ int Graph::getID() {
 	return id;
 }
 
-string Graph::to_string() {
-	string res = "";
-	for (auto var : nodes) {
-		auto node = var.second;
-		res += node->to_string() + "\n\n";
-	}
-	return res;
+void Graph::setID(int id)
+{
+	this->id = id;
 }
-
 
 void Graph::test() {
 	Graph* g = new Graph("graph1");
@@ -237,4 +256,29 @@ void Graph::test() {
 
 	Path p = g->fastestPath("Matrouh", "Aswan");
 	for (auto ed : p.Path_Edges) cout << ed << ' ';
+}
+
+// format-> id,name,$node(i),@edge(i)
+//node(i)-> name,childsnames..
+//edge(i)-> name,source,destination,std::to_string(length),std::to_string(directed)
+string Graph::toString() {
+	string toStringNode = "$";//
+	for (auto& i : nodes)
+		toStringNode += i.second->to_string();
+
+	string toStringEdges = "@";
+	for (auto& i : edges)
+		toStringEdges += i.second->to_string();
+
+	string res = std::to_string(id) + "," + name + "," + toStringNode + "," + toStringEdges;
+
+	//when load from file 
+	// 
+	//take first two words -> id and name
+	//from after $ to before @ -> nodes loading first word after $ is the name of the node and rest of words neighbours (before @)
+	//from after @ to end -> every 5 words are edgeName,source,destination,length,directed
+	
+
+
+	return res;
 }

@@ -1,27 +1,30 @@
 #include "../Headers/PathFinder.h"
 using namespace Model;
 
-Model::PathFinder::PathFinder(int from, int to) : from(from), to(to) {}
+Model::PathFinder::PathFinder()  {}
 
-pair<vector<string>, double> PathFinder::findPath()
+Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes , unordered_map<string, Edge*>& edges, bool isShortest)
 {
-	unordered_map<int, double> distances;
-	unordered_map<int, int> parent;
-	priority_queue<pair<double, int>> pq;
-	
-	distances[from] = 0;
-	parent[from] = -1;
-	pq.push({ 0, from });
+	priority_queue<pair<double, string>> pq;
+	unordered_map<string, double> distances;
+	unordered_map<string, string> parent;
+	Path path;
+
+	distances[destination] = 0;
+	parent[destination] = "";
+	pq.push({ 0, source });
 
 	bool buildPath = false;
 	while (!pq.empty()) {
-		int currentNode, weight;
+		string currentNode;
+		double weight;
 		tie(weight, currentNode) = pq.top();
+
 		pq.pop();
 		weight = -weight;
 
 		// Mission is Done !!
-		if (currentNode == to) {
+		if (currentNode == destination) {
 			buildPath = true;
 			break;
 		}
@@ -29,24 +32,39 @@ pair<vector<string>, double> PathFinder::findPath()
 		if (distances.find(currentNode) != distances.end() && weight > distances[currentNode])
 			continue;
 
-		for (const auto& childs : Model::Database::getInstance().getChildsOfNode(currentNode)) {
-			double newDist = distances[currentNode] + childs.second; 
-			if (distances.find(childs.first) == distances.end() || newDist < distances[childs.first]) {
-				distances[childs.first] = newDist;
-				parent[childs.first] = currentNode;
-				pq.push({ -newDist, childs.first });
+		for (const string& edge : nodes[currentNode]->neighbours) {
+			string nextNode = edges[edge]->destination;
+
+			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost());
+			
+			if (distances.find(nextNode) == distances.end() || newDist < distances[nextNode]) {
+				distances[nextNode] = newDist;
+				parent[nextNode] = currentNode;
+
+				pq.push({ -newDist, nextNode });
 			}
 		}
 	}
 
-	pair<vector<string>, double> ret;
-	if(!buildPath)
-		ret = { {}, -1 };
-	else {
-		Model::PathConstructor pathConstructor;
-		vector<string> path = pathConstructor.constructPath(from, to, parent);
-		ret = { path , distances[to] };
+	if (buildPath)
+	{
+		while (destination != "") {
+			path.Path_Nodes.push_back(parent[destination]);
+			destination = parent[destination];
+			//destination = edges[parent[destination]]->source;
+		}
+		reverse(path.Path_Nodes.begin(), path.Path_Nodes.end());
+		path.totalCost = distances[destination];
+
+		for (auto& edge : path.Path_Nodes)
+		{
+			path.Path_Edges.push_back(edges[edge]->name);
+		}
+
+		if (!isShortest)
+			path.totalCost = distances[destination];
 	}
-	return ret;
+
+	return path;
 }
 

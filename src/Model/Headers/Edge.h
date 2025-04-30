@@ -15,5 +15,6 @@ public:
 	void setGraphid(int graphId);
 	double trafficCost();
 	double lengthCost();
+	string to_string() const;
 };
 #endif
