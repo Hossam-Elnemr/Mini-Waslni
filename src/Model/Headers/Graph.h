@@ -28,6 +28,7 @@ public:
 	//									Traverse
 	pair<Path, double> shortestPath(string source, string destination);
 	Path fastestPath(string source, string destination);
+	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> DFS(string name);
 	vector<string> BFS(string name);
 

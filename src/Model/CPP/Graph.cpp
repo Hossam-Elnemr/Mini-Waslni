@@ -172,6 +172,33 @@ vector<string> Graph::BFS(string name) {
 	return result;
 }
 
+vector<string> Graph::DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities) {
+	if (!nodeIsFound(name)) {
+		cout << "City not found!\n";
+		return cities;
+	}
+
+	visited[name] = true;
+	cities.push_back(name);
+	for (auto edge : nodes[name]->edges) {
+		string city;
+		if (name == edges[edge]->source)
+			city = edges[edge]->destination;
+		else
+			city = edges[edge]->source;
+		if (!visited[city])
+			DFS(city, visited, cities);
+	}
+	return cities;
+}
+vector<string> Graph::DFS(string start) {
+	if (!nodeIsFound(start))
+		return cout << "Enter an existing node", vector<string>();
+	vector<string> cities;
+	unordered_map<string, bool> visited;
+	return DFS(start, visited, cities);
+}
+
 Path Graph::fastestPath(string src, string dest) {
 
 	priority_queue<pair<double, string>> pq;
