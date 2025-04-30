@@ -7,3 +7,8 @@ bool Tools::isContainSpaces(const string &str) noexcept {
 			return true;
 	return false;
 }
+bool Tools::isSpecialChar(char c) {
+	return c == '*' || c == '^' || c == '#' || c == '@' || c == '>' || c == '<' || c == ')' || c == ';'
+		|| c == '!' || c == '&' || c == '%' || c == '(' || c == ')' || c == '~' || c == '$' || c == '?'
+		|| c == '{' || c == '}' || c == '[' || c == ']' || c == ':' || c == '|' || c == '+' || c == '-';
+}

@@ -1,7 +1,6 @@
-# include "Edge.h"
-# include <string>
+# include "../Headers/Edge.h"
 int Edge::numberofEdges = 0;
-Edge::Edge(string name, string src, string dest, int length, bool directed) : source(src), destination(dest),
+Edge::Edge(std::string name, std::string src, std::string dest, int length, bool directed) : source(src), destination(dest),
 name(name), length(length), trafficLoad(0), directed(directed) {
 	id = numberofEdges++;
 }
@@ -14,9 +13,8 @@ double Edge::lengthCost() {
 string Edge::to_string() const {
 	return  name + "," + source + "," + destination + "," + std::to_string(length) + "," + std::to_string(directed);
 }
-double Edge::trafficCost() {
-	return 0.0;
-	/*return length*(1 + trafficLoad/graphs[graphId].traffic);*/
+double Edge::trafficCost(double sum) {
+	return length*(1 + trafficLoad/sum);
 }
 
 Edge::~Edge() {

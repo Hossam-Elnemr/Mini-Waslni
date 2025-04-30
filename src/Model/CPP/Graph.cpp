@@ -1,19 +1,18 @@
-# include "Graph.h"
+# include "../Headers/Graph.h"
 int Graph::numberOfGraphs = 0;
-using namespace std;
 
 Graph::Graph(string name) {
 	this->name = name;
 	id = numberOfGraphs++;
 }
-Graph::Graph(int id , string name ,const vector<vector<string>>& nodes , const vector<vector<string>>& edges) {
+Graph::Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges) {
 	this->id = id;
 	this->name = name;
 	for (int i = 0; i < (int)nodes.size(); ++i) {
 		Node* newNode = new Node(nodes[i][0]);
-		
-		for (int j = 1; j < nodes[i].size(); ++j) 
-			newNode->neighbours.insert(nodes[i][j]);
+
+		for (int j = 1; j < nodes[i].size(); ++j)
+			newNode->edges.insert(nodes[i][j]);
 
 		this->nodes[nodes[i][0]] = newNode;
 	}
@@ -22,12 +21,10 @@ Graph::Graph(int id , string name ,const vector<vector<string>>& nodes , const v
 		Edge* newedge = new Edge(i[0], i[1], i[2], std::stod(i[3]), std::stoi(i[4]));
 		this->edges[newedge->name] = newedge;
 	}
-
 	numberOfGraphs++;
 }
 
 //								Validations
-
 bool Graph::nodeIsFound(std::string name) {
 	return nodes.find(name) != nodes.end();
 }
@@ -35,66 +32,85 @@ bool Graph::edgeIsFound(std::string name) {
 	return edges.find(name) != edges.end();
 }
 
-
-
 //								  Modify
 void Graph::addNode(string name) {
+	for (auto s : name)
+		if (Tools::isSpecialChar(s))
+			return std::cout << "Special characters not allowed!", void();
 	if (nodeIsFound(name))
-		return std::cout << "Node already exists!", void();
-	
+		return std::cout << "node Name is found!\nEnter another name\n", void();
+
 	Node* newnode = new Node(name);
 	nodes[newnode->name] = newnode;
-	if(!cur_undo) lastOperations.push({ 1, name, vector<Edge>() });
+	if (!isUndo)
+		lastOperations.push({1, name, vector<Edge>()});
 }
 
 void Graph::addEdge(string name, string src, string dest, int length, bool directed) {
+	for (auto s : name)
+		if (Tools::isSpecialChar(s))
+			return std::cout << "Special characters not allowed!", void();
+
 	if (src == dest || !nodeIsFound(src) || !nodeIsFound(dest) || edgeIsFound(name))
 		return std::cout << "Error!!\nEnter a new edge name between two different existing nodes!\n", void();
-	if (length<=0) return std::cout << "Enter a positive integer for length.\n", void();
+
+	if (length <= 0)
+		return std::cout << "Enter a positive integer for length.\n", void();
+
 	Edge* newEdge = new Edge(name, src, dest, length, directed);
 
 	newEdge->setGraphid(id);
 	edges[name] = newEdge;
+
 	std::cout << src << " -> " << dest << '\n';
 
-	getNode(src)->neighbours[name]=true;
-	if (!directed) getNode(dest)->neighbours[name]=true;
-
-	if (!cur_undo) lastOperations.push({ 2, "", vector<Edge>(1, *newEdge) });
+	getNode(src)->edges.insert(name);
+	if (!directed) {
+		getNode(dest)->edges.insert(name);
+		std::cout << dest << " -> " << src << '\n';
+	}
+	if(!isUndo)
+		lastOperations.push({2, "", vector<Edge>(1, *newEdge)});
 }
 
 void Graph::deleteNode(string name) {
 	if (!nodeIsFound(name))
 		return cout << "node not found!\n", void();
-
 	unordered_map<string, Edge*> temp = edges;
 	Node* deletednode = getNode(name);
-	vector<Edge> deletededges;
+	vector<Edge> deletedEdges;
 
 	for (auto var : temp) {
 		string edgeName = var.first;
 		auto edge = var.second;
 
 		if (name == edge->source || name == edge->destination) {
-			deletededges.push_back(*edge);
+			deletedEdges.push_back(*edge);
 			deleteEdge(edgeName);
 		}
 	}
-	if (!cur_undo) lastOperations.push({ 3, name, deletededges});
+
+	if (!isUndo)
+		lastOperations.push({3, name, deletedEdges});
 	delete deletednode;
 	nodes.erase(name);
 }
- 
+
 void Graph::deleteEdge(string name) {
 	if (!edgeIsFound(name))
 		return cout << "Road not found!\n", void();
 
-	auto edge = edges[name]; // object
-	Node* src = getNode(edge->source), * dest = getNode(edge->destination);
+	auto edge = edges[name];
+	Node* src = getNode(edge->source), *dest = getNode(edge->destination);
 	bool directed = edge->directed;
-	src->neighbours.erase(name);
-	if (!directed) dest->neighbours.erase(name);
-	if (!cur_undo) lastOperations.push({ 4, "", vector<Edge>(1, *edge) });
+
+	src->edges.erase(name);
+
+	if(!directed)
+		dest->edges.erase(name);
+
+	if(!isUndo)
+		lastOperations.push({4, "", vector<Edge>(1, *edge)});
 	delete edge;
 	edges.erase(name);
 }
@@ -104,34 +120,33 @@ void Graph::undo() {
 		//do nothing
 		return;
 	}
-	auto [op, lastNode, lastEdges] = lastOperations.top();
+	int op;
+	string lastNode;
+	vector<Edge> lastEdges;
+	tie(op, lastNode, lastEdges) = lastOperations.top();
+
 	lastOperations.pop();
-	cur_undo = true;
-	if (op == 1) {       
-		//addnode
+	isUndo = true;
+	if (op == 1) { // addnode
 		deleteNode(lastNode);
 	}
-	else if (op == 2) {
-		//addedge
+	else if (op == 2) { // addedge
 		deleteEdge(lastEdges[0].name);
 	}
-	else if (op == 3) {
-		//deletenode
+	else if (op == 3) { // deletenode
 		addNode(lastNode);
 		for (auto edge : lastEdges) {
 			addEdge(edge.name, edge.source, edge.destination, edge.length, edge.directed);
 		}
 	}
-	else {
-		//deleteedge
+	else { // deleteedge
 		auto edge = lastEdges[0];
 		addEdge(edge.name, edge.source, edge.destination, edge.length, edge.directed);
 	}
-	cur_undo = false;
-}  
+	isUndo = false;
+}
 
 //								Traverse
-
 vector<string> Graph::BFS(string name) {
 	if (!nodeIsFound(name))
 		return std::cout << "node not found!\nEnter a valid node.\n", vector<string>();
@@ -147,7 +162,7 @@ vector<string> Graph::BFS(string name) {
 		string node = q.front();
 		q.pop();
 		result.push_back(node);
-		for (auto [edge, boole] : nodes[node]->neighbours) {
+		for (auto edge: nodes[node]->edges) {
 			string next_node = edges[edge]->destination;
 			if (visited[next_node]) continue;
 			visited[next_node] = true;
@@ -157,41 +172,45 @@ vector<string> Graph::BFS(string name) {
 	return result;
 }
 
-//
-//Path Graph::fastestPath(string src, string dest) {
-//
-//	priority_queue<pair<double, string>> pq;
-//	unordered_map<string, double> mincost;
-//	unordered_map<string, string> parent;
-//	Path path;
-//	pq.push({ 0,src });
-//	while (!pq.empty()) {
-//		auto [cost, node] = pq.top();
-//		pq.pop();
-//		if (mincost[node] && -cost > mincost[node]) continue;
-//		for (auto [edge, boole] : nodes[node]->neighbours) {
-//			string next_node = edges[edge]->destination;
-//
-//			double cur_cost = -cost + edges[edge]->length;
-//			
-//			if (!mincost[next_node] || cur_cost < mincost[next_node]) {
-//				pq.push({ -cur_cost, next_node });
-//				mincost[next_node] = cur_cost;
-//				parent[next_node] = edge;
-//			}
-//
-//		}
-//	}
-//
-//	while (parent[dest] != "") {
-//		path.Path_Edges.push_back(parent[dest]);
-//		dest = edges[parent[dest]]->source;
-//	}
-//
-//	path.totalCost = mincost[dest];
-//	reverse(path.Path_Edges.begin(), path.Path_Edges.end());
-//	return path;
-//}
+Path Graph::fastestPath(string src, string dest) {
+
+	priority_queue<pair<double, string>> pq;
+	unordered_map<string, double> mincost;
+	unordered_map<string, string> parent;
+	Path path;
+	pq.push({ 0,src });
+	while (!pq.empty()) {
+		double cost;
+		string node;
+		tie(cost, node) = pq.top();
+		pq.pop();
+		if (mincost[node] && -cost > mincost[node]) continue;
+
+		for (auto edge : nodes[node]->edges) {
+			string next_node = edges[edge]->destination;
+			double cur_cost = -cost + edges[edge]->length;
+			if (!mincost[next_node] || cur_cost < mincost[next_node]) {
+				pq.push({ -cur_cost, next_node });
+				mincost[next_node] = cur_cost;
+				parent[next_node] = edge;
+			}
+		}
+	}
+	while (parent[dest] != "") {
+		path.Path_Edges.push_back(parent[dest]);
+		dest = edges[parent[dest]]->source;
+	}
+	path.totalCost = mincost[dest];
+	reverse(path.Path_Edges.begin(), path.Path_Edges.end());
+	return path;
+}
+
+double Graph::getTotalTraffic() {
+	double result = 0;
+	for (const auto &obj : edges)
+		result += obj.second->trafficLoad;
+	return result;
+}
 
 Node* Graph::getNode(string name) {
 	return nodes[name];
@@ -204,10 +223,10 @@ int Graph::getID() {
 	return id;
 }
 
-void Graph::setID(int id)
-{
-	this->id = id;
+string Graph::getName() {
+	return name;
 }
+
 
 void Graph::test() {
 	Graph* g = new Graph("graph1");
@@ -221,21 +240,19 @@ void Graph::test() {
 	g->addEdge("second edge", "Cairo", "Alex", 4, false);
 	g->addEdge("fourth edge", "Matrouh", "Cairo", 4, true);
 	g->addEdge("third edge", "Alex", "Aswan", 4, false);
-	cout << "\n\n\n\n";
-	cout << g->to_string();
-	
-	g->addEdge("fi", "Alex", "Matrouh", 4, false);
-	cout << "########\n\n\n\n\n";
-	cout << g->to_string();
-	g->undo();
+	cout << '\n';
+	cout << g->toString();
 
-	cout << "########\n\n\n\n\n";
-	cout << g->to_string();
+	g->deleteNode("Cairo");
+
+	cout << "########\n\n";
+	cout << g->toString();
+	
 	vector <string> v;
 	string start = "Matrouh";
 	v = g->BFS(start);
 	std::cout << "\n\nFirst Test:\nSource is " << start << '\n';
-	for (int i = 0; i < v.size(); i++) {
+	for(int i = 0; i < v.size(); i++) {
 		cout << v[i];
 		if (i != v.size() - 1)
 			cout << " -> ";
@@ -254,9 +271,8 @@ void Graph::test() {
 
 	cout << "nodes: " << g->nodes.size() << ", edges: " << g->edges.size() << "\n\n";
 
-	Path p = g->fastestPath("Matrouh", "Aswan");
-	for (auto ed : p.Path_Edges) cout << ed << ' ';
 }
+
 
 // format-> id,name,$node(i),@edge(i)
 //node(i)-> name,childsnames..
@@ -277,7 +293,7 @@ string Graph::toString() {
 	//take first two words -> id and name
 	//from after $ to before @ -> nodes loading first word after $ is the name of the node and rest of words neighbours (before @)
 	//from after @ to end -> every 5 words are edgeName,source,destination,length,directed
-	
+
 
 
 	return res;

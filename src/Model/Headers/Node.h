@@ -1,15 +1,13 @@
-#pragma once
-# include<string>
-#include<unordered_map>
-#include<unordered_set>
-
-using namespace std;
+# include "Globals.h"
+# include "../Helpers/Tools.h"
 class Node {
 public:
 	string name;
-	int graphId;
+	int id, graphId;
 	Node(std::string name);
 	~Node();
-	unordered_set<string> neighbours;
-	string to_string() const noexcept;
+	unordered_set<string> edges;
+	void addNeighbour(string name);
+	string to_string();
+	static int numberOfNodes;
 };

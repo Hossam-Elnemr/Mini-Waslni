@@ -1,12 +1,9 @@
-#ifndef FILE_MANAGER_CPP
-#define FILE_MANAGER_CPP
-#include "Globals.h"
-
+#include "../Headers/Globals.h"
 namespace Model {
-    class FileManager {
+	class FileManager {
 	public:
 		static void saveToFile(const vector<string>& fileContent, const std::string& filePath) {
-			ofstream file(filePath , ios::out | ios::trunc);
+			ofstream file(filePath, ios::out | ios::trunc);
 			if (file.is_open()) {
 				for (const auto& line : fileContent) {
 					file << line << endl;
@@ -16,7 +13,7 @@ namespace Model {
 			else {
 				cout << "Unable to open file for writing: " << filePath << endl;
 			}
-        }
+		}
 		static vector<string> readFromFile(const std::string& filePath) {
 			ifstream file(filePath);
 			vector<string> lines;
@@ -32,6 +29,5 @@ namespace Model {
 			}
 			return lines;
 		}
-    };
+	};
 }
-#endif

@@ -5,7 +5,7 @@
 class Tools {
 public:
 	static bool isContainSpaces(const string &str) noexcept;
-
+	static bool isSpecialChar(char c);
 };
 
 #endif

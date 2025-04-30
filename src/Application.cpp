@@ -1,6 +1,5 @@
 #include "../Headers/Manager.h"
 int main() {
-	Manager* m = Manager::getInstance();
+	Manager m = Manager::getInstance();
 	Graph::test();
-
 }
