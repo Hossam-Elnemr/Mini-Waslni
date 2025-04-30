@@ -1,15 +1,17 @@
 #include "../Headers/PathFinder.h"
 using namespace Model;
 
-Model::PathFinder::PathFinder()  {}
+Model::PathFinder::PathFinder() {}
 
-Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes , unordered_map<string, Edge*>& edges, bool isShortest)
+Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes, unordered_map<string, Edge*>& edges, bool isShortest)
 {
 	priority_queue<pair<double, string>> pq;
 	unordered_map<string, double> distances;
 	unordered_map<string, string> parent;
 	Path path;
-
+	double sum = 0;
+	for (auto const& obj : edges)
+		sum += obj.second->trafficLoad;
 	distances[destination] = 0;
 	parent[destination] = "";
 	pq.push({ 0, source });
@@ -32,11 +34,11 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 		if (distances.find(currentNode) != distances.end() && weight > distances[currentNode])
 			continue;
 
-		for (const string& edge : nodes[currentNode]->neighbours) {
+		for (const string& edge : nodes[currentNode]->edges) {
 			string nextNode = edges[edge]->destination;
 
-			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost());
-			
+			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost(sum));
+
 			if (distances.find(nextNode) == distances.end() || newDist < distances[nextNode]) {
 				distances[nextNode] = newDist;
 				parent[nextNode] = currentNode;
@@ -67,4 +69,3 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 
 	return path;
 }
-
