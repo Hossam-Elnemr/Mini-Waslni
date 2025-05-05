@@ -9,9 +9,11 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 	unordered_map<string, double> distances;
 	unordered_map<string, string> parent;
 	Path path;
+	
 	double sum = 0;
 	for (auto const& obj : edges)
 		sum += obj.second->trafficLoad;
+
 	distances[destination] = 0;
 	parent[destination] = "";
 	pq.push({ 0, {source , ""}});
@@ -37,10 +39,10 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 		if (distances.find(currentNode) != distances.end() && weight > distances[currentNode])
 			continue;
 
-		for (const string& edge : nodes[currentNode]->neighbours) {
+		for (const string& edge : nodes[currentNode]->edges) {
 			Edge* nextEdge = edges[edge];
 
-			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost());
+			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost(sum));
 			
 			if (distances.find(nextEdge->destination) == distances.end() || newDist < distances[nextEdge->destination]) {
 				distances[nextEdge->destination] = newDist;
