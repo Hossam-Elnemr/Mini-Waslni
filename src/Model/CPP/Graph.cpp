@@ -262,12 +262,42 @@ void Graph::test() {
 	g->addNode("Giza");
 	g->addNode("Alex");
 	g->addNode("Aswan");
+	g->addNode("Fayoum");
+	g->addNode("Suez");
 	g->addNode("Matrouh");
+	g->addNode("Luxor");
+
 	g->addEdge("First edge", "Cairo", "Giza", 4, false);
+	g->addEdge("second edge", "Giza", "Alex", 4, false);
+	g->addEdge("third edge", "Alex", "Cairo", 4, false);
+	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
+	/*g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
+	g->addEdge("six edge", "Suez", "Fayoum", 4, false);
+	g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
+	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);*/
+
+	/*g->addEdge("First edge", "Cairo", "Giza", 4, true);
+	g->addEdge("second edge", "Giza", "Alex", 4, true);
+	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
+	g->addEdge("third edge", "Alex", "Cairo", 4, true);
+	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);*/
+	g->tarjan("Cairo", "");
+	//cout << g->LowLink["Giza"] << endl;
+	cout << "third edge" << " " << g->bridge["third edge"] << endl;
+	cout << "First edge" << " " << g->bridge["First edge"] << endl;
+	cout << "second edge" << " " << g->bridge["second edge"] << endl;
+	cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
+	/*cout << "Fifth edge" << " " << g->bridge["Fifth edge"] << endl;
+	cout << "six edge" << " " << g->bridge["six edge"] << endl;
+	cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
+	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;*/
+
+
+	/*g->addEdge("First edge", "Cairo", "Giza", 4, false);
 	g->addEdge("second edge", "Cairo", "Alex", 4, false);
 	g->addEdge("fourth edge", "Matrouh", "Cairo", 4, true);
-	g->addEdge("third edge", "Alex", "Aswan", 4, false);
-	cout << '\n';
+	g->addEdge("third edge", "Alex", "Aswan", 4, false);*/
+	/*cout << '\n';
 	cout << g->toString();
 
 	g->deleteNode("Cairo");
@@ -296,7 +326,7 @@ void Graph::test() {
 	}
 	cout << "\n\n";
 
-	cout << "nodes: " << g->nodes.size() << ", edges: " << g->edges.size() << "\n\n";
+	cout << "nodes: " << g->nodes.size() << ", edges: " << g->edges.size() << "\n\n";*/
 
 }
 
@@ -324,4 +354,32 @@ string Graph::toString() {
 
 
 	return res;
+}
+
+
+void Graph::tarjan(string node, string parent) {
+	st.push(node);
+	dfn[node] = LowLink[node] = ndfn;
+	ndfn++;
+	instack[node] = 1;
+	for (auto edge : nodes[node]->edges) {
+		string child;
+		node == edges[edge]->destination ? child = edges[edge]->source : child = edges[edge]->destination;
+		Edge* e = getEdge(edge);
+		if (dfn[child] == 0) {
+			tarjan(child, node);
+			LowLink[node] = min(LowLink[node], LowLink[child]);
+		}
+		else if (child != parent) {
+			LowLink[node] = min(LowLink[node], dfn[child]);
+		}
+	}
+
+	if (dfn[node] == LowLink[node] && parent != "") {
+		for (auto e : nodes[node]->edges) {
+			if (edges[e]->source == parent)
+				bridge[e] = 1;
+		}
+	}
+
 }

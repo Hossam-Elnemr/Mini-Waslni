@@ -18,6 +18,13 @@ public:
 	unordered_map<string, Node*> nodes;
 	unordered_map<string, Edge*> edges;
 
+	// Tarjan
+	stack <string> st;
+	unordered_map <string, vector<string>> comps;
+	unordered_map <string, int> comp, instack, dfn, LowLink;
+	unordered_map<string, bool> bridge;
+	int ndfn = 1;
+
 	//								  Modify graph
 	void addNode(string name); // 1
 	void addEdge(string name, string src, string dest, int length, bool directed); // 2
@@ -31,6 +38,7 @@ public:
 	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> DFS(string name);
 	vector<string> BFS(string name);
+	void tarjan(string node, string parent);
 
 	//							Getters-Setters & Testing
 	int getID();
