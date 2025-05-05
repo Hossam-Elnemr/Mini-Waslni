@@ -157,7 +157,6 @@ vector<string> Graph::BFS(string name) {
 	return result;
 }
 
-//
 //Path Graph::fastestPath(string src, string dest) {
 //
 //	priority_queue<pair<double, string>> pq;

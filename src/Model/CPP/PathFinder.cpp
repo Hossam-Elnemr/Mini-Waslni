@@ -5,21 +5,24 @@ Model::PathFinder::PathFinder()  {}
 
 Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes , unordered_map<string, Edge*>& edges, bool isShortest)
 {
-	priority_queue<pair<double, string>> pq;
+	priority_queue<pair<double, pair<string ,string>>> pq; // {cost, {curNodeName , edgeName}}
 	unordered_map<string, double> distances;
 	unordered_map<string, string> parent;
 	Path path;
 
 	distances[destination] = 0;
 	parent[destination] = "";
-	pq.push({ 0, source });
+	pq.push({ 0, {source , ""}});
 
 	bool buildPath = false;
-	while (!pq.empty()) {
-		string currentNode;
-		double weight;
-		tie(weight, currentNode) = pq.top();
+	string destEdge = "";
 
+	while (!pq.empty()) {
+		auto top = pq.top();
+		double weight = top.first;
+		string currentNode = top.second.first;
+		string currentEdge = top.second.second;
+		
 		pq.pop();
 		weight = -weight;
 
@@ -33,33 +36,28 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 			continue;
 
 		for (const string& edge : nodes[currentNode]->neighbours) {
-			string nextNode = edges[edge]->destination;
+			Edge* nextEdge = edges[edge];
 
 			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost());
 			
-			if (distances.find(nextNode) == distances.end() || newDist < distances[nextNode]) {
-				distances[nextNode] = newDist;
-				parent[nextNode] = currentNode;
-
-				pq.push({ -newDist, nextNode });
+			if (distances.find(nextEdge->destination) == distances.end() || newDist < distances[nextEdge->destination]) {
+				distances[nextEdge->destination] = newDist;
+				parent[nextEdge->name] = currentEdge;
+				destEdge = nextEdge->name;
+				pq.push({ -newDist, {nextEdge->destination , nextEdge->name} });
 			}
 		}
 	}
 
 	if (buildPath)
 	{
-		while (destination != "") {
-			path.Path_Nodes.push_back(parent[destination]);
-			destination = parent[destination];
-			//destination = edges[parent[destination]]->source;
+		while (destEdge != "") {
+			path.Path_Edges.push_back(destEdge);
+			destEdge = parent[destEdge];
 		}
-		reverse(path.Path_Nodes.begin(), path.Path_Nodes.end());
-		path.totalCost = distances[destination];
+		reverse(path.Path_Edges.begin(), path.Path_Edges.end());
 
-		for (auto& edge : path.Path_Nodes)
-		{
-			path.Path_Edges.push_back(edges[edge]->name);
-		}
+		path.totalCost = distances[destination];
 
 		if (!isShortest)
 			path.totalCost = distances[destination];
