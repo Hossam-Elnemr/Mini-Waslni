@@ -1,10 +1,6 @@
-#pragma once
-#include <iostream>
-#include <stack>
-#include <vector>
+# include "Globals.h"
 using namespace std;
-class User
-{
+class User {
 	string password;
 public:
 	int id;
@@ -12,12 +8,6 @@ public:
 	stack<string> recentSearch, undo;
 	vector<int>graphsId;
 
-
 	User(string userName, string password);
 	bool editGraphCheck(int id);
-
-
-
-
 };
-

@@ -1,9 +1,6 @@
-#include "Tools.h"
-
-
-bool Tools::isContainSpaces(const string &str) noexcept {
-	for (char c : str)
-		if (isspace(c))
-			return true;
-	return false;
+# include "Tools.h"
+bool Tools::isSpecialChar(char c) {
+	return c == '*' || c == '^' || c == '#' || c == '@' || c == '>' || c == '<' || c == ')' || c == ';'
+		|| c == '!' || c == '&' || c == '%' || c == '(' || c == ')' || c == '~' || c == '$' || c == '?'
+		|| c == '{' || c == '}' || c == '[' || c == ']' || c == ':' || c == '|' || c == '+' || c == '-';
 }

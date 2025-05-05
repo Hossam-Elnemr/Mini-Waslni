@@ -1,15 +1,17 @@
 #include "../Headers/PathFinder.h"
 using namespace Model;
 
-Model::PathFinder::PathFinder()  {}
+Model::PathFinder::PathFinder() {}
 
-Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes , unordered_map<string, Edge*>& edges, bool isShortest)
+Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes, unordered_map<string, Edge*>& edges, bool isShortest)
 {
 	priority_queue<pair<double, pair<string ,string>>> pq; // {cost, {curNodeName , edgeName}}
 	unordered_map<string, double> distances;
 	unordered_map<string, string> parent;
 	Path path;
-
+	double sum = 0;
+	for (auto const& obj : edges)
+		sum += obj.second->trafficLoad;
 	distances[destination] = 0;
 	parent[destination] = "";
 	pq.push({ 0, {source , ""}});
@@ -65,4 +67,3 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 
 	return path;
 }
-

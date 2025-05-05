@@ -1,9 +1,7 @@
 #ifndef DataLoader_CPP
 #define DataLoader_CPP
-#include "../Headers/Globals.h"
 #include "../Headers/Manager.h"
 #include "../CPP/FileManager.cpp"
-#include "../Headers/Graph.h"
 namespace Model {
 	class DataLoader {
 	public: 

@@ -1,56 +1,42 @@
-#ifndef GRAPH_H
-#define GRAPH_H
-#include<string>
-#include "Node.h"
-#include "Edge.h"
-# include <vector>
-# include <unordered_map>
-# include <map>
 # include "Path.h"
-# include <queue>
-#include <stack>
-
-using namespace std;
 class Graph {
+	int id;
+	string name;
+	bool nodeIsFound(std::string);
+	bool edgeIsFound(std::string);
+
 	Node* getNode(string name);
 	Edge* getEdge(string name);
 
-	bool nodeIsFound(std::string);
-	bool edgeIsFound(std::string);
-	int id;
-	bool cur_undo=false;
+	bool isUndo = false; // variable that says if that operation came from undo or not
 	stack <tuple<int, string, vector<Edge>>> lastOperations;
 public:
 	Graph(string name);
 	Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges); // to load graph data from file
 	static int numberOfGraphs;
-	string name;
 
 	unordered_map<string, Node*> nodes;
 	unordered_map<string, Edge*> edges;
 
 	//								  Modify graph
-	void addNode(string name);
-	void addEdge(string name, string src, string dest, int length, bool directed);
-	void deleteNode(string name);
-	void deleteEdge(string name);
+	void addNode(string name); // 1
+	void addEdge(string name, string src, string dest, int length, bool directed); // 2
+	void deleteNode(string name); // 3
+	void deleteEdge(string name); // 4
 	void undo();
 
 	//									Traverse
-	//Path shortestPath(string source, string destination);
-	//Path fastestPath(string src, string dest);
-
+	pair<Path, double> shortestPath(string source, string destination);
+	Path fastestPath(string source, string destination);
+	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> DFS(string name);
 	vector<string> BFS(string name);
 
 	//							Getters-Setters & Testing
 	int getID();
-	void setID(int id);
-	static void test();
-
-	///num of graphs ->static num
-	//-> line every graph {id::name::toStringNode::toStringEdges}
-
+	string getName();
 	string toString();
+	double getTotalTraffic();
+
+	static void test();
 };
-#endif

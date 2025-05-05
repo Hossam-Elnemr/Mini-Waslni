@@ -1,0 +1,17 @@
+﻿  Application.cpp
+  Tools.cpp
+  DataLoader.cpp
+  DataSaver.cpp
+  Edge.cpp
+  FileManager.cpp
+  Graph.cpp
+C:\Users\hossa\mytest\Mini-Waslni\src\Model\CPP\Graph.cpp(21,55): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\hossa\mytest\Mini-Waslni\src\Model\CPP\Graph.cpp(139,58): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\hossa\mytest\Mini-Waslni\src\Model\CPP\Graph.cpp(144,57): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Manager.cpp
+C:\Users\hossa\mytest\Mini-Waslni\src\Model\CPP\Manager.cpp(48,36): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Node.cpp
+  PathFinder.cpp
+  User.cpp
+  Generating Code...
+  Mini-Waslni.vcxproj -> C:\Users\hossa\mytest\Mini-Waslni\x64\Debug\Mini-Waslni.exe
