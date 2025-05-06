@@ -4,7 +4,7 @@ int Graph::numberOfGraphs = 0;
 Graph::Graph(string name) {
 	this->name = name;
 	id = numberOfGraphs++;
-	//ndfn = 0;
+	ndfn = 1;
 	root = false;
 }
 Graph::Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges) {
@@ -272,18 +272,14 @@ void Graph::test() {
 	g->addEdge("First edge", "Cairo", "Giza", 4, false);
 	g->addEdge("second edge", "Giza", "Alex", 4, false);
 	g->addEdge("third edge", "Alex", "Cairo", 4, false);
-	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
+	g->addEdge("fourth edge", "Alex", "Matrouh", 4, false);
 	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
 	g->addEdge("six edge", "Suez", "Fayoum", 4, false);
 	g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
 	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);
 
-	/*g->addEdge("First edge", "Cairo", "Giza", 4, true);
-	g->addEdge("second edge", "Giza", "Alex", 4, true);
-	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
-	g->addEdge("third edge", "Alex", "Cairo", 4, true);
-	g->tarjan("Cairo", "");*/
-	//cout << g->LowLink["Giza"] << endl;
+	g->tarjan("Cairo", "");
+
 	cout << "third edge" << " " << g->bridge["third edge"] << endl;
 	cout << "First edge" << " " << g->bridge["First edge"] << endl;
 	cout << "second edge" << " " << g->bridge["second edge"] << endl;
@@ -292,6 +288,15 @@ void Graph::test() {
 	cout << "six edge" << " " << g->bridge["six edge"] << endl;
 	cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
 	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;
+
+	cout << "----------------------------------------" << endl;
+
+	cout << "Alex" << " " << g->artPoint["Alex"] << endl;
+	cout << "Matrouh" << " " << g->artPoint["Matrouh"] << endl;
+	cout << "Fayoum" << " " << g->artPoint["Fayoum"] << endl;
+	cout << "Luxor" << " " << g->artPoint["Luxor"] << endl;
+	cout << "Cairo" << " " << g->artPoint["Cairo"] << endl;
+	cout << "Giza" << " " << g->artPoint["Giza"] << endl;
 
 
 	/*g->addEdge("First edge", "Cairo", "Giza", 4, false);
@@ -359,10 +364,8 @@ string Graph::toString() {
 
 
 void Graph::tarjan(string node, string parent) {
-	st.push(node);
 	dfn[node] = LowLink[node] = ndfn;
 	ndfn++;
-	instack[node] = 1;
 	for (auto edge : nodes[node]->edges) {
 		string child;
 		node == edges[edge]->destination ? child = edges[edge]->source : child = edges[edge]->destination;
