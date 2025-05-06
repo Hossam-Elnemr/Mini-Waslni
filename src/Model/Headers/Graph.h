@@ -22,8 +22,9 @@ public:
 	stack <string> st;
 	unordered_map <string, vector<string>> comps;
 	unordered_map <string, int> comp, instack, dfn, LowLink;
-	unordered_map<string, bool> bridge;
+	unordered_map<string, bool> bridge, artPoint;
 	int ndfn = 1;
+	bool root;
 
 	//								  Modify graph
 	void addNode(string name); // 1

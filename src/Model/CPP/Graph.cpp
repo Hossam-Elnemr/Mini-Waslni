@@ -4,6 +4,8 @@ int Graph::numberOfGraphs = 0;
 Graph::Graph(string name) {
 	this->name = name;
 	id = numberOfGraphs++;
+	//ndfn = 0;
+	root = false;
 }
 Graph::Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges) {
 	this->id = id;
@@ -271,26 +273,25 @@ void Graph::test() {
 	g->addEdge("second edge", "Giza", "Alex", 4, false);
 	g->addEdge("third edge", "Alex", "Cairo", 4, false);
 	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
-	/*g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
+	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
 	g->addEdge("six edge", "Suez", "Fayoum", 4, false);
 	g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
-	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);*/
+	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);
 
 	/*g->addEdge("First edge", "Cairo", "Giza", 4, true);
 	g->addEdge("second edge", "Giza", "Alex", 4, true);
 	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
 	g->addEdge("third edge", "Alex", "Cairo", 4, true);
-	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);*/
-	g->tarjan("Cairo", "");
+	g->tarjan("Cairo", "");*/
 	//cout << g->LowLink["Giza"] << endl;
 	cout << "third edge" << " " << g->bridge["third edge"] << endl;
 	cout << "First edge" << " " << g->bridge["First edge"] << endl;
 	cout << "second edge" << " " << g->bridge["second edge"] << endl;
 	cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
-	/*cout << "Fifth edge" << " " << g->bridge["Fifth edge"] << endl;
+	cout << "Fifth edge" << " " << g->bridge["Fifth edge"] << endl;
 	cout << "six edge" << " " << g->bridge["six edge"] << endl;
 	cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
-	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;*/
+	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;
 
 
 	/*g->addEdge("First edge", "Cairo", "Giza", 4, false);
@@ -365,16 +366,24 @@ void Graph::tarjan(string node, string parent) {
 	for (auto edge : nodes[node]->edges) {
 		string child;
 		node == edges[edge]->destination ? child = edges[edge]->source : child = edges[edge]->destination;
-		Edge* e = getEdge(edge);
+
 		if (dfn[child] == 0) {
 			tarjan(child, node);
 			LowLink[node] = min(LowLink[node], LowLink[child]);
+
+			// Mark the Articulation points
+			if (LowLink[child] >= dfn[node]) {
+				if (dfn[node] == 1 && root == false)
+					root = true;
+				else
+					artPoint[node] = 1;
+			}
 		}
 		else if (child != parent) {
 			LowLink[node] = min(LowLink[node], dfn[child]);
 		}
 	}
-
+	//Mark the bridges
 	if (dfn[node] == LowLink[node] && parent != "") {
 		for (auto e : nodes[node]->edges) {
 			if (edges[e]->source == parent)
