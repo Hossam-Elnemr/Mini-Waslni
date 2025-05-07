@@ -78,6 +78,7 @@ void Graph::addEdge(string name, string src, string dest, int length, bool direc
 void Graph::deleteNode(string name) {
 	if (!nodeIsFound(name))
 		return cout << "node not found!\n", void();
+
 	unordered_map<string, Edge*> temp = edges;
 	Node* deletednode = getNode(name);
 	vector<Edge> deletedEdges;
@@ -105,6 +106,15 @@ void Graph::deleteEdge(string name) {
 	auto edge = edges[name];
 	Node* src = getNode(edge->source), *dest = getNode(edge->destination);
 	bool directed = edge->directed;
+
+	//Mixed Graph
+	bool bridge = 1;
+	BFS(src->name, bridge, name);
+	if (bridge) {
+		cout << "Watch out this a bridge, do you reraly want to delete it ? y/n ";
+		char ans; cin >> ans;
+		if (ans == 'n') return;
+	}
 
 	src->edges.erase(name);
 
@@ -149,7 +159,7 @@ void Graph::undo() {
 }
 
 //								Traverse
-vector<string> Graph::BFS(string name) {
+vector<string> Graph::BFS(string name, bool &warning, string Removed = "") {
 	if (!nodeIsFound(name))
 		return std::cout << "node not found!\nEnter a valid node.\n", vector<string>();
 
@@ -160,12 +170,28 @@ vector<string> Graph::BFS(string name) {
 	string src = name;
 	q.push(src);
 	visited[name] = true;
+	//Attached Node to the possible Bridge
+	string AttachedNode = edges[Removed]->destination;
 	while (!q.empty()) {
 		string node = q.front();
 		q.pop();
 		result.push_back(node);
+		// Check if node can be reached from another way
+		if (node == AttachedNode) {
+			warning = 0;
+			break;
+		}
 		for (auto edge: nodes[node]->edges) {
-			string next_node = edges[edge]->destination;
+			if (edge == Removed) continue;
+
+			string src = edges[edge]->source;
+			string dest = edges[edge]->destination;
+			string next_node;
+			if (edges[edge]->directed)
+				next_node = dest;
+			else
+				dest == node ? next_node = src : next_node = dest;
+			
 			if (visited[next_node]) continue;
 			visited[next_node] = true;
 			q.push(next_node);
@@ -269,8 +295,8 @@ void Graph::test() {
 	g->addNode("Matrouh");
 	g->addNode("Luxor");
 
-	g->addEdge("First edge", "Cairo", "Giza", 4, false);
-	g->addEdge("second edge", "Giza", "Alex", 4, false);
+	g->addEdge("First edge", "Cairo", "Giza", 4, true);
+	g->addEdge("second edge", "Giza", "Alex", 4, true);
 	g->addEdge("third edge", "Alex", "Cairo", 4, false);
 	g->addEdge("fourth edge", "Alex", "Matrouh", 4, false);
 	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
@@ -280,7 +306,8 @@ void Graph::test() {
 
 	g->tarjan("Cairo", "");
 
-	cout << "third edge" << " " << g->bridge["third edge"] << endl;
+	g->deleteEdge("First edge");
+	/*cout << "third edge" << " " << g->bridge["third edge"] << endl;
 	cout << "First edge" << " " << g->bridge["First edge"] << endl;
 	cout << "second edge" << " " << g->bridge["second edge"] << endl;
 	cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
@@ -296,7 +323,7 @@ void Graph::test() {
 	cout << "Fayoum" << " " << g->artPoint["Fayoum"] << endl;
 	cout << "Luxor" << " " << g->artPoint["Luxor"] << endl;
 	cout << "Cairo" << " " << g->artPoint["Cairo"] << endl;
-	cout << "Giza" << " " << g->artPoint["Giza"] << endl;
+	cout << "Giza" << " " << g->artPoint["Giza"] << endl;*/
 
 
 	/*g->addEdge("First edge", "Cairo", "Giza", 4, false);
@@ -335,7 +362,6 @@ void Graph::test() {
 	cout << "nodes: " << g->nodes.size() << ", edges: " << g->edges.size() << "\n\n";*/
 
 }
-
 
 // format-> id,name,$node(i),@edge(i)
 //node(i)-> name,childsnames..

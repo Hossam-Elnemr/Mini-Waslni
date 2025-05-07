@@ -1,5 +1,5 @@
 ﻿  Graph.cpp
 C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\src\Model\CPP\Graph.cpp(23,55): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\src\Model\CPP\Graph.cpp(141,58): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\src\Model\CPP\Graph.cpp(146,57): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\src\Model\CPP\Graph.cpp(151,58): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\src\Model\CPP\Graph.cpp(156,57): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
   Mini-Waslni.vcxproj -> C:\Users\husse\Desktop\Programming\Projects\Mini-Waslni\x64\Debug\Mini-Waslni.exe
