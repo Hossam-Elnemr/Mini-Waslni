@@ -6,7 +6,7 @@ public:
 	double length, trafficLoad;
 	static int numberofEdges;
 	bool directed;
-	Edge(string name, string src, string dest, int length, bool directed);
+	Edge(string name, string src, string dest, int length, bool directed, int id, int graphId, double trafficLoad);
 	~Edge();
 	void setGraphid(int graphId);
 	double trafficCost(double sum);

@@ -5,9 +5,9 @@ Node::Node(string name) {
 	id = numberOfNodes++;
 }
 string Node::to_string() {
-	string str = "ID: " + std::to_string(id) + "\nName: " + name + "\nNeighbours: ";
+	string str = "~" + std::to_string(id) + "," + name + ",";
 	for (auto i : edges)
-		str += i + ' ';
+		str += i + ",";
 	return str;
 }
 Node::~Node() {

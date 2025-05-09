@@ -14,29 +14,44 @@ namespace Model {
             int graphsNo = stoi(fileContent[0]);
 
             for (int i = 1; i < fileContent.size(); ++i) {
-                istringstream graphStream(fileContent[i]);
-                string id, graphName;
+                istringstream graphIss(fileContent[i]);
+                string id, graphName,root,ndfn;
                 vector<vector<string>> nodes , edges;
 
-                getline(graphStream, id, ',');
-                getline(graphStream, graphName, ',');
+                #define _ getline
+
+                _(graphIss, id, ',');
+                _(graphIss, graphName, ',');
+                _(graphIss, root, ',');
+                _(graphIss, ndfn, ',');
+                
 
                 int graphId = std::stoi(id);
-
+                bool graphRoot = std::stoi(root);
+                int graphNdfn = std::stoi(ndfn);
+                
 
                 string interval;
-                while (getline(graphStream, interval, '@')) {
+                while (_(graphIss, interval, '@')) { 
                     //[$ to @]
                     if (interval[0] == '$') {
-                        istringstream nodeInfoInterval(interval.substr(1));
-                        string nodeName;
-
-                        while (std::getline(nodeInfoInterval, nodeName, ',')) {
+                        istringstream allNodesInfoIss(interval.substr(2));///ignore $~
+                        
+                        string nodeInfo;
+                        while (_(allNodesInfoIss, nodeInfo, '~')) {
+                            //load node info and it's edges here
+                            istringstream nodeInfoIss(nodeInfo);
                             vector<string> nodeData;
-                            nodeData.push_back(nodeName);
+                            string id, name;
+                            _(nodeInfoIss, id, ',');
+                            _(nodeInfoIss, name, ',');
+
+                            nodeData.push_back(id);
+                            nodeData.push_back(name);
+
 
                             std::string neighbor;
-                            while (std::getline(nodeInfoInterval, neighbor, ',')) {
+                            while (_(nodeInfoIss, neighbor, ',')) {
                                 nodeData.push_back(neighbor);
                             }
 
@@ -45,22 +60,26 @@ namespace Model {
                     }
                     else {
                         //(after @)
-                        std::istringstream edgeInfoInterval(interval);
-                        std::string edgeName, source, destination, lengthStr, isDirected;
+                        istringstream edgeInfoInterval(interval);
+                        string edgeName, source, destination, length, isDirected, id,graphId,trafficLoad;
 
-                        while (std::getline(edgeInfoInterval, edgeName, ',')) {
-                            std::getline(edgeInfoInterval, source, ',');
-                            std::getline(edgeInfoInterval, destination, ',');
-                            std::getline(edgeInfoInterval, lengthStr, ',');
-                            std::getline(edgeInfoInterval, isDirected, ',');
+                        while (_(edgeInfoInterval, edgeName, ',')) {
+                            _(edgeInfoInterval, source, ',');
+                            _(edgeInfoInterval, destination, ',');
+                            _(edgeInfoInterval, length, ',');
+                            _(edgeInfoInterval, isDirected, ',');
+                            _(edgeInfoInterval, id, ',');
+                            _(edgeInfoInterval, graphId, ',');
+                            _(edgeInfoInterval, trafficLoad, ',');
 
-                            vector<string> edgeData = { edgeName, source, destination, lengthStr, isDirected };
+
+                            vector<string> edgeData = { edgeName, source, destination, length, isDirected,id,graphId,trafficLoad };
                             edges.push_back(edgeData);
                         }
                     }
                 }
 
-                Graph* graph = new Graph(graphId, graphName, nodes, edges);
+                Graph* graph = new Graph(graphId, graphName ,graphRoot , graphNdfn, nodes, edges);
 				Manager::getInstance().graphs.push_back(graph);
 
                 //for testing

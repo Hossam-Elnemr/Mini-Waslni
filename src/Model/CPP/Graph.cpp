@@ -7,9 +7,9 @@ Graph::Graph(string name) {
 	ndfn = 1;
 	root = false;
 }
-Graph::Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges) {
-	this->id = id;
-	this->name = name;
+Graph::Graph(int id, string name , bool root , int ndfn, const vector<vector<string>>& nodes, const vector<vector<string>>& edges) 
+	:id(id),name(name),root(root),ndfn(ndfn) {
+	
 	for (int i = 0; i < (int)nodes.size(); ++i) {
 		Node* newNode = new Node(nodes[i][0]);
 
@@ -363,7 +363,7 @@ void Graph::test() {
 
 }
 
-// format-> id,name,$node(i),@edge(i)
+//format-> id,name,root,ndfn,$node(i),@edge(j)
 //node(i)-> name,childsnames..
 //edge(i)-> name,source,destination,std::to_string(length),std::to_string(directed)
 string Graph::toString() {
@@ -375,16 +375,13 @@ string Graph::toString() {
 	for (auto& i : edges)
 		toStringEdges += i.second->to_string();
 
-	string res = std::to_string(id) + "," + name + "," + toStringNode + "," + toStringEdges;
+	string res = std::to_string(id) + "," + name + "," + std::to_string(root) + "," + std::to_string(ndfn)+ toStringNode + toStringEdges;
 
 	//when load from file 
-	// 
-	//take first two words -> id and name
+	//For every line after 1st line
+	//take first four words -> id,name,root,ndfn
 	//from after $ to before @ -> nodes loading first word after $ is the name of the node and rest of words neighbours (before @)
 	//from after @ to end -> every 5 words are edgeName,source,destination,length,directed
-
-
-
 	return res;
 }
 

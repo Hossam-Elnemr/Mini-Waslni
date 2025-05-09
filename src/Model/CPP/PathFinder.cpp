@@ -14,8 +14,8 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 	for (auto const& obj : edges)
 		sum += obj.second->trafficLoad;
 
-	distances[destination] = 0;
-	parent[destination] = "";
+	distances[source] = 0;
+	parent[source] = "";
 	pq.push({ 0, {source , ""}});
 
 	bool buildPath = false;

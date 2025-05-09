@@ -9,7 +9,7 @@ namespace Model {
 	public:
 		static void saveGraphData() {
 			vector<string> fileContent;
-			fileContent.push_back(to_string(Manager::getInstance().graphsCounter));
+			fileContent.push_back(std::to_string(Manager::getInstance().graphsCounter));
 			for (auto graph : Manager::getInstance().graphs) {
 				fileContent.push_back(graph->toString());
 			}

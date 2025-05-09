@@ -12,7 +12,7 @@ class Graph {
 	stack <tuple<int, string, vector<Edge>>> lastOperations;
 public:
 	Graph(string name);
-	Graph(int id, string name, const vector<vector<string>>& nodes, const vector<vector<string>>& edges); // to load graph data from file
+	Graph(int id, string name , bool root , int ndfn, const vector<vector<string>>& nodes, const vector<vector<string>>& edges); // to load graph data from file
 	static int numberOfGraphs;
 
 	unordered_map<string, Node*> nodes;
