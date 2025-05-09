@@ -1,21 +1,20 @@
-#ifndef DataSaver_CPP
-#define DataSaver_CPP
-#include "../Headers/Globals.h"
+#include "../Headers/DataSaver.h"
 #include "../Headers/Manager.h"
-#include "../CPP/FileManager.cpp"
+#include "../Headers/FileManager.h"
+
 
 namespace Model {
-	class DataSaver {
-	public:
-		static void saveGraphData() {
-			vector<string> fileContent;
-			fileContent.push_back(std::to_string(Manager::getInstance().graphsCounter));
-			for (auto graph : Manager::getInstance().graphs) {
-				fileContent.push_back(graph->toString());
-			}
-
-			FileManager::saveToFile(fileContent, "graphData.txt");
+	void DataSaver::saveGraphData() {
+		vector<string> fileContent;
+		fileContent.push_back(std::to_string(Manager::getInstance().graphsCounter));
+		
+		for (auto graph : Manager::getInstance().graphs) {
+			string graphStr = graph->toString();
+		
+			fileContent.push_back(graphStr);
 		}
-	};
+
+		FileManager::saveToFile(fileContent, "graphData.txt");
+	}
 }
-#endif
+	

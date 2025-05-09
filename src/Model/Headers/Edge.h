@@ -1,3 +1,5 @@
+#ifndef Edge_H
+#define Edge_H
 # include "Node.h"
 class Edge {
 public:
@@ -13,3 +15,4 @@ public:
 	double lengthCost();
 	string to_string() const;
 };
+#endif

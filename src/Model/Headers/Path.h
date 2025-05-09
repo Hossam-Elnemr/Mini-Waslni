@@ -1,3 +1,5 @@
+#ifndef Path_H	
+#define Path_H
 # include "Edge.h"
 class Path {
 public:
@@ -6,3 +8,4 @@ public:
 	//vector<string> Path_Nodes; 
 	double totalCost;
 };
+#endif

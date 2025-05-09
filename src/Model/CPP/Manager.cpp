@@ -1,10 +1,12 @@
 # include "../Headers/Manager.h"
 
+Manager Manager::instance;
 int Manager::graphsCounter = 0;
 
 Manager::Manager() {
-	
 }
+
+
 int Manager::totalCities() {
 	int sum = 0;
 	for (auto graph : graphs)

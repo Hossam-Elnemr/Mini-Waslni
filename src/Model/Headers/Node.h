@@ -1,3 +1,5 @@
+#ifndef Node_H
+#define Node_H
 # include "Globals.h"
 # include "../../Helpers/Tools.h"
 class Node {
@@ -11,3 +13,4 @@ public:
 	string to_string();
 	static int numberOfNodes;
 };
+#endif

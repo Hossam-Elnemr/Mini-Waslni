@@ -1,4 +1,7 @@
-# include "../Headers/Graph.h"
+#include "../Headers/Graph.h"
+#include "../Headers/Globals.h"
+#include "../Headers/DataSaver.h"
+
 int Graph::numberOfGraphs = 0;
 
 Graph::Graph(string name) {
@@ -20,7 +23,7 @@ Graph::Graph(int id, string name , bool root , int ndfn, const vector<vector<str
 	}
 
 	for (auto& i : edges) {
-		Edge* newedge = new Edge(i[0], i[1], i[2], std::stod(i[3]), std::stoi(i[4]));
+		Edge* newedge = new Edge(i[0], i[1], i[2], std::stod(i[3]), std::stoi(i[4]) , std::stoi(i[5]), std::stoi(i[6]) , std::stod(i[7]));
 		this->edges[newedge->name] = newedge;
 	}
 	numberOfGraphs++;
@@ -59,9 +62,8 @@ void Graph::addEdge(string name, string src, string dest, int length, bool direc
 	if (length <= 0)
 		return std::cout << "Enter a positive integer for length.\n", void();
 
-	Edge* newEdge = new Edge(name, src, dest, length, directed);
+	Edge* newEdge = new Edge(name, src, dest, length, directed, Edge::numberofEdges++, id, 0.0);
 
-	newEdge->setGraphid(id);
 	edges[name] = newEdge;
 
 	std::cout << src << " -> " << dest << '\n';
@@ -417,4 +419,9 @@ void Graph::tarjan(string node, string parent) {
 		}
 	}
 
+}
+
+Graph::~Graph() {
+	cout << "Graph destructor called\n";
+	
 }

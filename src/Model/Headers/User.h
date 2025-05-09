@@ -1,3 +1,5 @@
+#ifndef User_H
+#define User_H
 # include "Globals.h"
 using namespace std;
 class User {
@@ -11,3 +13,4 @@ public:
 	User(string userName, string password);
 	bool editGraphCheck(int id);
 };
+#endif

@@ -1,4 +1,7 @@
-# include "Path.h"
+#pragma once
+#include "Globals.h"
+#include "Path.h"
+
 class Graph {
 	int id;
 	string name;
@@ -47,4 +50,5 @@ public:
 
 	static void test();
 	static void test2();
+	~Graph();
 };

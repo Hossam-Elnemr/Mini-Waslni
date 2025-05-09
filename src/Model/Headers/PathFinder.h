@@ -1,3 +1,5 @@
+#ifndef PathFinder_H
+#define PathFinder_H
 #include "Globals.h"
 #include "../Headers/Path.h"
 
@@ -12,3 +14,4 @@ namespace Model {
 	};
 
 }
+#endif

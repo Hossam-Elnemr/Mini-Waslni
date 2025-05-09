@@ -1,5 +1,8 @@
+#ifndef Manager_H
+#define Manager_H
 # include "Graph.h"
 # include "User.h"
+// # include "../CPP/DataSaver.cpp"
 using namespace std;
 class Manager {
 	static Manager instance;
@@ -22,8 +25,8 @@ public:
 
 	//						Getters && Testing
 	void test();
-	static Manager getInstance() {
-		static Manager instance;
+	static Manager& getInstance() {
 		return instance;
 	}
 };
+#endif

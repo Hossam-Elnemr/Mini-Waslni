@@ -1,96 +1,110 @@
-#ifndef DataLoader_CPP
-#define DataLoader_CPP
+#include "../Headers/DataLoader.h"
 #include "../Headers/Manager.h"
-#include "../CPP/FileManager.cpp"
-namespace Model {
-	class DataLoader {
-	public: 
-        static void loadGraphsFromFile(const vector<string>& fileContent) {
-            if (fileContent.empty()) {
-                cerr << "File content is empty!\n";
-                return;
+#include "../Headers/FileManager.h"
+using namespace std;
+using namespace Model;
+
+void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
+    if (fileContent.empty()) {
+        cerr << "File content is empty!\n";
+        return;
+    }
+
+    try {
+        int graphsNo = stoi(fileContent[0]);
+        Graph::numberOfGraphs = graphsNo;
+
+        
+        for (int i = 1; i < fileContent.size(); ++i) {
+            string line = fileContent[i];
+            int dollarPos = line.find('$');
+            int atPos = line.find('@');
+            
+            // Parse header
+            string headerPart = line.substr(0, dollarPos);
+            istringstream headerIss(headerPart);
+            string id, graphName, root, ndfn;
+            
+            if (!getline(headerIss, id, ',') || 
+                !getline(headerIss, graphName, ',') || 
+                !getline(headerIss, root, ',') || 
+                !getline(headerIss, ndfn, ',')) {
+                cerr << "Error: Invalid header format\n";
+                continue;
             }
 
-            int graphsNo = stoi(fileContent[0]);
 
-            for (int i = 1; i < fileContent.size(); ++i) {
-                istringstream graphIss(fileContent[i]);
-                string id, graphName,root,ndfn;
-                vector<vector<string>> nodes , edges;
+            int graphId = stoi(id);
+            bool graphRoot = (root == "1");
+            int graphNdfn = stoi(ndfn);
 
-                #define _ getline
+            vector<vector<string>> nodes, edges;
 
-                _(graphIss, id, ',');
-                _(graphIss, graphName, ',');
-                _(graphIss, root, ',');
-                _(graphIss, ndfn, ',');
+            // Node Part
+            string nodePart = line.substr(dollarPos + 2, atPos - dollarPos - 2);
+            istringstream nodeIss(nodePart);
+            string nodeInfo;
                 
-
-                int graphId = std::stoi(id);
-                bool graphRoot = std::stoi(root);
-                int graphNdfn = std::stoi(ndfn);
+            while (getline(nodeIss, nodeInfo, '~')) {
+                istringstream nodeDetailIss(nodeInfo);
+                vector<string> nodeData;
+                string nodeId, nodeName;
                 
+                if (!getline(nodeDetailIss, nodeId, ',') || 
+                    !getline(nodeDetailIss, nodeName, ',')) {
+                    cerr << "Error: Invalid node format\n";
+                    continue;
+                }
 
-                string interval;
-                while (_(graphIss, interval, '@')) { 
-                    //[$ to @]
-                    if (interval[0] == '$') {
-                        istringstream allNodesInfoIss(interval.substr(2));///ignore $~
-                        
-                        string nodeInfo;
-                        while (_(allNodesInfoIss, nodeInfo, '~')) {
-                            //load node info and it's edges here
-                            istringstream nodeInfoIss(nodeInfo);
-                            vector<string> nodeData;
-                            string id, name;
-                            _(nodeInfoIss, id, ',');
-                            _(nodeInfoIss, name, ',');
+                
+                nodeData.push_back(nodeId);
+                nodeData.push_back(nodeName);
 
-                            nodeData.push_back(id);
-                            nodeData.push_back(name);
-
-
-                            std::string neighbor;
-                            while (_(nodeInfoIss, neighbor, ',')) {
-                                nodeData.push_back(neighbor);
-                            }
-
-                            nodes.push_back(nodeData);
-                        }
-                    }
-                    else {
-                        //(after @)
-                        istringstream edgeInfoInterval(interval);
-                        string edgeName, source, destination, length, isDirected, id,graphId,trafficLoad;
-
-                        while (_(edgeInfoInterval, edgeName, ',')) {
-                            _(edgeInfoInterval, source, ',');
-                            _(edgeInfoInterval, destination, ',');
-                            _(edgeInfoInterval, length, ',');
-                            _(edgeInfoInterval, isDirected, ',');
-                            _(edgeInfoInterval, id, ',');
-                            _(edgeInfoInterval, graphId, ',');
-                            _(edgeInfoInterval, trafficLoad, ',');
-
-
-                            vector<string> edgeData = { edgeName, source, destination, length, isDirected,id,graphId,trafficLoad };
-                            edges.push_back(edgeData);
-                        }
+                string edgeName;
+                while (getline(nodeDetailIss, edgeName, ',')) {
+                    if (!edgeName.empty()) {
+                        nodeData.push_back(edgeName);
                     }
                 }
 
-                Graph* graph = new Graph(graphId, graphName ,graphRoot , graphNdfn, nodes, edges);
-				Manager::getInstance().graphs.push_back(graph);
-
-                //for testing
-                cout << "Graph " << graphName << " with ID " << graphId << " loaded successfully.\n";
+                nodes.push_back(nodeData);
             }
+
+            // Edge Part
+            string edgePart = line.substr(atPos + 1);
+            istringstream edgeIss(edgePart);
+            string edgeInfo;
+            
+            while (!edgeIss.eof()) {
+                string edgeName, source, destination, length, isDirected, edgeId, edgeGraphId, trafficLoad;
+                
+                if (!getline(edgeIss, edgeName, ',') || 
+                    !getline(edgeIss, source, ',') || 
+                    !getline(edgeIss, destination, ',') || 
+                    !getline(edgeIss, length, ',') || 
+                    !getline(edgeIss, isDirected, ',') || 
+                    !getline(edgeIss, edgeId, ',') || 
+                    !getline(edgeIss, edgeGraphId, ',') || 
+                    !getline(edgeIss, trafficLoad, ',')) {
+                    if (!edgeName.empty()) {
+                        cerr << "Error: Invalid edge format\n";
+                    }
+                    break;
+                }
+
+                vector<string> edgeData = {edgeName, source, destination, length, isDirected, edgeId, edgeGraphId, trafficLoad};
+                edges.push_back(edgeData);
+            }
+
+            Graph* graph = new Graph(graphId, graphName, graphRoot, graphNdfn, nodes, edges);
+            Manager::getInstance().graphs.push_back(graph);
         }
+        cout << "loaded graphs\n";
+        Manager::getInstance().graphsCounter = graphsNo;
+        Graph::numberOfGraphs = graphsNo;
 
-
-		
-	};
+    }
+    catch (const std::exception& e) {
+        cerr << "Error loading graphs: " << e.what() << "\n";
+    }
 }
-
-
-#endif
