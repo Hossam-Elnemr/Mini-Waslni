@@ -33,6 +33,7 @@ Path PathFinder::findPath(string source, string destination, unordered_map<strin
 		// Mission is Done !!
 		if (currentNode == destination) {
 			buildPath = true;
+			destEdge = currentEdge;
 			break;
 		}
 

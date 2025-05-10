@@ -7,6 +7,7 @@ namespace Model {
 	class DataSaver {
 	public:
 		static void saveGraphData();
+		static void saveUserData();
 	};
 }
 #endif

@@ -10,7 +10,7 @@ class Manager {
 	Manager();
 public:
 	vector<Graph*> graphs;
-	unordered_map<string, string> users; // username -> password
+	unordered_map<string, User*> users; // username -> User
 	static int graphsCounter;
 
 	//						User Functions

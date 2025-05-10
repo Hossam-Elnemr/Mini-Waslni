@@ -108,3 +108,73 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
         cerr << "Error loading graphs: " << e.what() << "\n";
     }
 }
+
+
+void DataLoader::loadUsersFromFile(const vector<string>& fileContent) {
+    if (fileContent.empty()) {
+        cerr << "File content is empty!\n";
+        return;
+    }
+
+    try {
+        int usersNo = stoi(fileContent[0]);
+        
+        for (int i = 1; i < fileContent.size(); ++i) {
+            string line = fileContent[i];
+            
+            //Main user info part
+            int dollarPos = line.find('$');
+            string mainInfo = line.substr(0, dollarPos);
+            istringstream mainIss(mainInfo);
+            string id, userName, password;
+            
+            if (!getline(mainIss, id, ',') || 
+                !getline(mainIss, userName, ',') || 
+                !getline(mainIss, password, ',')) {
+                cerr << "Error: Invalid user format\n";
+                continue;
+            }
+
+            
+            User* user = new User(userName, password);
+            user->id = stoi(id);
+
+            //Recent searches stack part
+            int atPos = line.find('@');
+            string recentSearches = line.substr(dollarPos + 1, atPos - dollarPos - 1);
+            istringstream searchIss(recentSearches);
+            string search;
+            while (getline(searchIss, search, ',')) 
+                if (!search.empty()) 
+                    user->recentSearch.push(search);
+
+            // Undo stack part
+            int hashPos = line.find('#');
+            string undoStack = line.substr(atPos + 1, hashPos - atPos - 1);
+            istringstream undoIss(undoStack);
+            string undoItem;
+            while (getline(undoIss, undoItem, ',')) {
+                if (!undoItem.empty()) {
+                    user->undo.push(undoItem);
+                }
+            }
+
+            // Graph IDs part
+            string graphIds = line.substr(hashPos + 1);
+            istringstream graphIss(graphIds);
+            string graphId;
+
+            while (getline(graphIss, graphId, ',')) 
+                if (!graphId.empty()) 
+                    user->graphsId.push_back(stoi(graphId));
+                
+            
+
+            Manager::getInstance().users[userName] = user;
+        }
+        cout << "Loaded users\n";
+    }
+    catch (const std::exception& e) {
+        cerr << "Error loading users: " << e.what() << "\n";
+    }
+}

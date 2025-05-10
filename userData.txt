@@ -1,0 +1,3 @@
+2
+763613872,john_doe,password123$Cairo,Alexandria,@#1,2,
+763614256,jane_smith,secure456$Giza,@#3,

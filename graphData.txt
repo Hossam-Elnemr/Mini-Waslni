@@ -1,3 +1,3 @@
 2
-0,Cairo Metro,0,1$~3,0,0,Line1MS,Sadat,Line1SA,2,3,~1,2,1,3,Attaba,Line1SA,2,~2,1,2,Maadi,Line1MS,Line1HM,1,~0,3,3,Helwan,Line1HM,0,@Line1SA,Sadat,Attaba,2.000000,0,4,0,0.000000,Line1MS,Maadi,Sadat,6.000000,0,2,0,0.000000,Line1HM,Helwan,Maadi,8.000000,0,0,0,0.000000,
-1,Alex Tram,0,1$~6,4,4,Miami,Route1SM,6,~5,5,Sidi Gaber,Route1RS,Route1SM,5,~4,6,6,Raml,Route1RS,4,@Route1SM,Sidi Gaber,Miami,7.000000,0,8,1,0.000000,Route1RS,Raml,Sidi Gaber,5.000000,0,6,1,0.000000,
+0,Cairo Metro,0,1$~3,0,0,Line1HM,Helwan,3,~2,2,Line1HM,Line1MS,Maadi,2,1,~1,1,Attaba,3,1,Line1SA,2,~0,3,3,2,Line1SA,Sadat,Line1MS,0,@Line1HM,Helwan,Maadi,8.000000,0,0,0,0.000000,Line1MS,Maadi,Sadat,6.000000,0,2,0,0.000000,Line1SA,Sadat,Attaba,2.000000,0,4,0,0.000000,
+1,Alex Tram,0,1$~6,4,4,Route1RS,Raml,6,~5,5,Route1SM,Route1RS,Sidi Gaber,5,~4,6,6,Route1SM,Miami,4,@Route1RS,Raml,Sidi Gaber,5.000000,0,6,1,0.000000,Route1SM,Sidi Gaber,Miami,7.000000,0,8,1,0.000000,

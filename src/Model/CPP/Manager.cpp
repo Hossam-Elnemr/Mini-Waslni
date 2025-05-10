@@ -16,7 +16,7 @@ int Manager::totalCities() {
 
 bool Manager::login(string userName, string password)
 {
-	if (users.find(userName) != users.end() && users[userName] == password)
+	if (users.find(userName) != users.end() && users[userName]->getPassword() == password)
 		return true;
 
 	return false;
@@ -26,8 +26,8 @@ bool Manager::signUp(string userName, string password)
 {
 	if (users.find(userName) == users.end())
 	{
-		User user(userName, password);
-		users[userName] = password;
+		User* user = new User(userName, password);
+		users[userName] = user;
 		return true;
 	}
 

@@ -8,6 +8,7 @@ namespace Model {
 	class DataLoader {
 	public: 
         static void loadGraphsFromFile(const vector<string>& fileContent) ;
+		static void loadUsersFromFile(const vector<string>& fileContent);
 	};
 }
 #endif

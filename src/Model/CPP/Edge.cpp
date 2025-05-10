@@ -16,7 +16,6 @@ string Edge::to_string() const {
 double Edge::trafficCost(double sum) {
 	return length*(1 + trafficLoad/sum);
 }
-
 Edge::~Edge() {
 	//	DO NOT DELETE SOURCE & DESTINATION
 }

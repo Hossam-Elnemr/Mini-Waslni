@@ -12,5 +12,7 @@ public:
 
 	User(string userName, string password);
 	bool editGraphCheck(int id);
+	string toString();
+	string getPassword();
 };
 #endif
