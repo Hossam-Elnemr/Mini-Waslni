@@ -33,7 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Helpers\Tools.h" />
+    <ClInclude Include="src\Model\Headers\DataLoader.h" />
+    <ClInclude Include="src\Model\Headers\DataSaver.h" />
     <ClInclude Include="src\Model\Headers\Edge.h" />
+    <ClInclude Include="src\Model\Headers\FileManager.h" />
     <ClInclude Include="src\Model\Headers\Globals.h" />
     <ClInclude Include="src\Model\Headers\Graph.h" />
     <ClInclude Include="src\Model\Headers\Manager.h" />
@@ -41,6 +44,13 @@
     <ClInclude Include="src\Model\Headers\Path.h" />
     <ClInclude Include="src\Model\Headers\PathFinder.h" />
     <ClInclude Include="src\Model\Headers\User.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Controller\test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".vscode\launch.json" />
+    <None Include=".vscode\tasks.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

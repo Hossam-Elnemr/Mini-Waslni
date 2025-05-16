@@ -109,8 +109,8 @@ int main() {
 	// testPathFinder();
 	// loadGraphTest();
 	loadUserTest();
-	sampleUserTest();
-	// Graph::test();
+	//sampleUserTest();
+	 Graph::test();
 	// Model::DataSaver::saveGraphData();
 	Model::DataSaver::saveUserData();
 	// cout << Manager::getInstance().users.size() << "\n";

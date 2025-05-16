@@ -297,8 +297,8 @@ void Graph::test() {
 	g->addNode("Matrouh");
 	g->addNode("Luxor");
 
-	g->addEdge("First edge", "Cairo", "Giza", 4, true);
-	g->addEdge("second edge", "Giza", "Alex", 4, true);
+	g->addEdge("First edge", "Cairo", "Giza", 4, false);
+	g->addEdge("second edge", "Giza", "Alex", 4, false);
 	g->addEdge("third edge", "Alex", "Cairo", 4, false);
 	g->addEdge("fourth edge", "Alex", "Matrouh", 4, false);
 	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
@@ -308,8 +308,8 @@ void Graph::test() {
 
 	g->tarjan("Cairo", "");
 
-	g->deleteEdge("First edge");
-	/*cout << "third edge" << " " << g->bridge["third edge"] << endl;
+	//g->deleteEdge("First edge");
+	cout << "third edge" << " " << g->bridge["third edge"] << endl;
 	cout << "First edge" << " " << g->bridge["First edge"] << endl;
 	cout << "second edge" << " " << g->bridge["second edge"] << endl;
 	cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
@@ -318,7 +318,7 @@ void Graph::test() {
 	cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
 	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;
 
-	cout << "----------------------------------------" << endl;
+	/*cout << "----------------------------------------" << endl;
 
 	cout << "Alex" << " " << g->artPoint["Alex"] << endl;
 	cout << "Matrouh" << " " << g->artPoint["Matrouh"] << endl;
@@ -399,6 +399,11 @@ void Graph::tarjan(string node, string parent) {
 			tarjan(child, node);
 			LowLink[node] = min(LowLink[node], LowLink[child]);
 
+			// Mark the Bridges
+			if (dfn[child] == LowLink[child]) {
+				bridge[edge] = 1;
+			}
+
 			// Mark the Articulation points
 			if (LowLink[child] >= dfn[node]) {
 				if (dfn[node] == 1 && root == false)
@@ -409,13 +414,6 @@ void Graph::tarjan(string node, string parent) {
 		}
 		else if (child != parent) {
 			LowLink[node] = min(LowLink[node], dfn[child]);
-		}
-	}
-	//Mark the bridges
-	if (dfn[node] == LowLink[node] && parent != "") {
-		for (auto e : nodes[node]->edges) {
-			if (edges[e]->source == parent)
-				bridge[e] = 1;
 		}
 	}
 
