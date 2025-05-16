@@ -7,7 +7,7 @@ class User {
 public:
 	int id;
 	string userName;
-	stack<string> recentSearch, undo;
+	stack<pair<string,string>> recentSearch, undo;
 	vector<int>graphsId;
 
 	User(string userName, string password);

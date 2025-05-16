@@ -16,18 +16,18 @@ string User::toString() {
 	string result = std::to_string(id) + "," + userName + "," + password;
     
     result += "$";
-    stack<string> tempStack = recentSearch;
+    stack<pair<string,string>> tempStack = recentSearch;
     while (!tempStack.empty()) {
-        result += tempStack.top() + ",";
+        result += tempStack.top().first + "`" + tempStack.top().second + ",";
         tempStack.pop();
     }
     
-    result += "@";
-    tempStack = undo;
-    while (!tempStack.empty()) {
-        result += tempStack.top() + ",";
-        tempStack.pop();
-    }
+    // result += "@";
+    // tempStack = undo;
+    // while (!tempStack.empty()) {
+    //     result += tempStack.top() + ",";
+    //     tempStack.pop();
+    // }
 		
     result += "#";
     for (int graphId : graphsId) {

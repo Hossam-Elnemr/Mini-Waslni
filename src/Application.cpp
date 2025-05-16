@@ -28,13 +28,13 @@ void sampleGraphTest() {
 void sampleUserTest() {
    
     User* user1 = new User("john_doe", "password123");
-    user1->recentSearch.push("Cairo");
-    user1->recentSearch.push("Alexandria");
+    user1->recentSearch.push({"Cairo", "1"});
+    user1->recentSearch.push({"Alexandria", "2"});
     user1->graphsId.push_back(1);
     user1->graphsId.push_back(2);
     
     User* user2 = new User("jane_smith", "secure456");
-    user2->recentSearch.push("Giza");
+    user2->recentSearch.push({"Giza", "3"});
     user2->graphsId.push_back(3);
     
     Manager::getInstance().users["john_doe"] = user1;
@@ -55,6 +55,9 @@ void loadUserTest() {
 	vector<string> fileContent = Model::FileManager::readFromFile("userData.txt");
 	Model::DataLoader::loadUsersFromFile(fileContent);
 	cout << "Finished loadUserTest\n";
+    for(const auto & i : fileContent) {
+        cout << i << "\n";
+    }
 }
 
 void testPathFinder() {
@@ -105,11 +108,11 @@ int main() {
 	Manager m = Manager::getInstance();
 	// testPathFinder();
 	// loadGraphTest();
-	// loadUserTest();
-	// // sampleUserTest();
-	// // Graph::test();
+	loadUserTest();
+	sampleUserTest();
+	// Graph::test();
 	// Model::DataSaver::saveGraphData();
-	// Model::DataSaver::saveUserData();
+	Model::DataSaver::saveUserData();
 	// cout << Manager::getInstance().users.size() << "\n";
 	// for (const pair<string,User*>& user : Manager::getInstance().users) {
 	// 	cout << user.second->toString() << "\n";

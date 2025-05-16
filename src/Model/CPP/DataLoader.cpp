@@ -97,7 +97,7 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
             }
 
             Graph* graph = new Graph(graphId, graphName, graphRoot, graphNdfn, nodes, edges);
-            Manager::getInstance().graphs.push_back(graph);
+            Manager::getInstance().graphs.push_back(&(*graph));
         }
         cout << "loaded graphs\n";
         Manager::getInstance().graphsCounter = graphsNo;
@@ -140,24 +140,31 @@ void DataLoader::loadUsersFromFile(const vector<string>& fileContent) {
             user->id = stoi(id);
 
             //Recent searches stack part
-            int atPos = line.find('@');
-            string recentSearches = line.substr(dollarPos + 1, atPos - dollarPos - 1);
+            // int atPos = line.find('#');
+            int hashPos = line.find('#');
+            string recentSearches = line.substr(dollarPos + 1, hashPos - dollarPos - 1);
             istringstream searchIss(recentSearches);
             string search;
-            while (getline(searchIss, search, ',')) 
-                if (!search.empty()) 
-                    user->recentSearch.push(search);
+            while (getline(searchIss, search, ',')) {
+                int del = search.find('`');
+                string first = search.substr(0, del);
+                string second = search.substr(del + 1);
+                if (!first.empty() && !second.empty()) 
+                    user->recentSearch.push(make_pair(first, second));
+                else 
+                    cerr << "Error: Invalid search format\n";
+
+            }
 
             // Undo stack part
-            int hashPos = line.find('#');
-            string undoStack = line.substr(atPos + 1, hashPos - atPos - 1);
-            istringstream undoIss(undoStack);
-            string undoItem;
-            while (getline(undoIss, undoItem, ',')) {
-                if (!undoItem.empty()) {
-                    user->undo.push(undoItem);
-                }
-            }
+            // string undoStack = line.substr(atPos + 1, hashPos - atPos - 1);
+            // istringstream undoIss(undoStack);
+            // string undoItem;
+            // while (getline(undoIss, undoItem, ',')) {
+            //     if (!undoItem.empty()) {
+            //         user->undo.push(undoItem);
+            //     }
+            // }
 
             // Graph IDs part
             string graphIds = line.substr(hashPos + 1);

@@ -59,7 +59,6 @@ void Manager::editGraph(User user, int id, int op, string name, string src, stri
 		}
 
 	}
-
 }
 
 
