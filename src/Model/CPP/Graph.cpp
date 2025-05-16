@@ -306,7 +306,7 @@ void Graph::test() {
 	g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
 	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);
 
-	g->tarjan("Cairo", "");
+	g->tarjan("Matrouh");
 
 	//g->deleteEdge("First edge");
 	cout << "third edge" << " " << g->bridge["third edge"] << endl;

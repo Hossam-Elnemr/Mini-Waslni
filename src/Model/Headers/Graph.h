@@ -40,7 +40,7 @@ public:
 	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> DFS(string name);
 	vector<string> BFS(string name, bool &warning, string Removed);
-	void tarjan(string node, string parent);
+	void tarjan(string node, string parent = "");
 
 	//							Getters-Setters & Testing
 	int getID();
