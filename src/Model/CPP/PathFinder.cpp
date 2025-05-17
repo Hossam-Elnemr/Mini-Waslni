@@ -1,72 +1,87 @@
-#include "../Headers/PathFinder.h"
+#include "PathFinder.h"
 using namespace Model;
 
 Model::PathFinder::PathFinder() {}
 
 Path PathFinder::findPath(string source, string destination, unordered_map<string, Node*>& nodes, unordered_map<string, Edge*>& edges, bool isShortest)
 {
-	priority_queue<pair<double, pair<string ,string>>> pq; // {cost, {curNodeName , edgeName}}
-	unordered_map<string, double> distances;
-	unordered_map<string, string> parent;
-	Path path;
-	
-	double sum = 0;
-	for (auto const& obj : edges)
-		sum += obj.second->trafficLoad;
+    priority_queue<pair<double,  string>> pq; // {cost, {curNodeName , edgeName}}
+    unordered_map<string, double> cost;
+    unordered_map<string, string> parent;
+    Path path;
 
-	distances[source] = 0;
-	parent[source] = "";
-	pq.push({ 0, {source , ""}});
+    double sum = 1;
+    for (auto const& obj : edges)
+        sum += obj.second->trafficLoad;
 
-	bool buildPath = false;
-	string destEdge = "";
+    cost[source] = 0;
+    parent[source] = "";
+    pq.push({ 0, source });
 
-	while (!pq.empty()) {
-		auto top = pq.top();
-		double weight = top.first;
-		string currentNode = top.second.first;
-		string currentEdge = top.second.second;
-		
-		pq.pop();
-		weight = -weight;
+    bool buildPath = false;
+    string destEdge = "";
+    while (!pq.empty()) {
+        auto top = pq.top();
+        double weight = top.first;
+        string currentNode = top.second;
 
-		// Mission is Done !!
-		if (currentNode == destination) {
-			buildPath = true;
-			destEdge = currentEdge;
-			break;
-		}
+        pq.pop();
+        weight = -weight;
 
-		if (distances.find(currentNode) != distances.end() && weight > distances[currentNode])
-			continue;
+        // Mission is Done !!
+        if (currentNode == destination) {
+            buildPath = true;
+            break;
+        }
 
-		for (const string& edge : nodes[currentNode]->edges) {
-			Edge* nextEdge = edges[edge];
+        if (cost.find(currentNode) != cost.end() && weight > cost[currentNode])
+            continue;
 
-			double newDist = distances[currentNode] + edges[edge]->lengthCost() + (isShortest ? 0 : edges[edge]->trafficCost(sum));
-			
-			if (distances.find(nextEdge->destination) == distances.end() || newDist < distances[nextEdge->destination]) {
-				distances[nextEdge->destination] = newDist;
-				parent[nextEdge->name] = currentEdge;
-				destEdge = nextEdge->name;
-				pq.push({ -newDist, {nextEdge->destination , nextEdge->name} });
-			}
-		}
-	}
+        // cout << ""
+        for (const string& edge : nodes[currentNode]->edges) {
+            Edge* nextEdge = edges[edge];
+            string nextNode = (nextEdge->source == currentNode) ? nextEdge->destination : nextEdge->source;
 
-	if (buildPath)
-	{
-		while (destEdge != "") {
-			path.Path_Edges.push_back(destEdge);
-			destEdge = parent[destEdge];
-		}
-		reverse(path.Path_Edges.begin(), path.Path_Edges.end());
+            double newDist = cost[currentNode] +(isShortest ? edges[edge]->lengthCost() : edges[edge]->trafficCost(sum));
+            if (cost.find(nextNode) == cost.end() || newDist < cost[nextNode]) {
+                cost[nextNode] = newDist;
+                parent[nextNode] = currentNode;
+                destEdge = nextEdge->name;
+                pq.push({ -newDist, nextNode});
+            }
+        }
+    }
 
-		path.totalCost = distances[destination];
+    if (buildPath)
+    {
+        string current = destination;
+        while (current != "") {
+            edges[destEdge]->trafficLoad++;
+            path.Path_Nodes.push_back(current);
+            current = parent[current];
+        }
+        reverse(path.Path_Nodes.begin(), path.Path_Nodes.end());
+        path.totalCost = cost[destination];
+        vector<string>& temp = path.Path_Nodes;
+        for(int i = 0; i<temp.size()-1; ++i) {
+            string node = temp[i];
+            for(auto edge : nodes[node]->edges) {
+                if(edges[edge]->source == temp[i+1] || edges[edge]->destination == temp[i+1]) {
+                    path.Path_Edges.push_back(edge);
+                    double cost = (isShortest? edges[edge]->lengthCost() : edges[edge]->trafficCost(sum));
+                    path.totalTime += edges[edge]->getTime(cost);
+                    break;
+                }
 
-		if (!isShortest)
-			path.totalCost = distances[destination];
-	}
+            }
+        }
+        cout << '\n';
+        for(auto i  : path.Path_Edges)
+            cout << i << ' ';
+        cout << '\n';
+        // for(auto i  : path.Path_Nodes)
+        //     cout << i << ' ';
 
-	return path;
+    }
+    return path;
 }
