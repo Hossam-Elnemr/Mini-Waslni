@@ -1,12 +1,13 @@
-# include "../Headers/Manager.h"
+# include "Manager.h"
 
-Manager Manager::instance;
 int Manager::graphsCounter = 0;
-
+int Manager::usersCounter = 0;
+Graph* Manager::curGraph = NULL;
+User* Manager::curUser = NULL;
+Manager* Manager:: instance = NULL;
 Manager::Manager() {
+	
 }
-
-
 int Manager::totalCities() {
 	int sum = 0;
 	for (auto graph : graphs)
@@ -16,22 +17,20 @@ int Manager::totalCities() {
 
 bool Manager::login(string userName, string password)
 {
-	if (users.find(userName) != users.end() && users[userName]->getPassword() == password)
+    if (usersInfo.find(userName) != usersInfo.end() && usersInfo[userName] == password){
+        curUser = users[userName];
+        cerr << "Here: &&&&& " << curUser->userName << ' ' << curUser->getpassword() << '\n';
 		return true;
-
+    }
 	return false;
 }
 
 bool Manager::signUp(string userName, string password)
 {
-	if (users.find(userName) == users.end())
-	{
-		User* user = new User(userName, password);
-		users[userName] = user;
-		return true;
-	}
-
-	return false;
+    curUser = addUser(userName, password);
+    usersInfo[userName] = password;
+    users[userName] = curUser;
+    return true;
 }
 
 void Manager::editGraph(User user, int id, int op, string name, string src, string dest, double len, bool directed)
@@ -40,7 +39,7 @@ void Manager::editGraph(User user, int id, int op, string name, string src, stri
 	{
 		Graph* found = NULL;
 
-		found = findGraph(id);
+        found = findGraph(id, "");
 		if (op == 1) //Add Node
 		{
 			found->addNode(name);
@@ -59,16 +58,24 @@ void Manager::editGraph(User user, int id, int op, string name, string src, stri
 		}
 
 	}
+
 }
 
 
-Graph* Manager::findGraph(int id) {
+Graph* Manager::findGraph(int id, string name) {
 	for (auto graph : graphs)
-		if (graph->getID() == id)
-			return graph;
+        if (graph->getID() == id || Tools::isEqual(graph->getName(), name))
+            return cout << "Found\n", graph;
+    cout << graphsCounter << '\n';
 	return NULL;
 }
-
+User* Manager::findUser(string username)
+{
+    for(auto it:users)
+        if(Tools::isEqual(it.first, username))
+            return it.second;
+    return NULL;
+}
 void Manager::test()
 {
 	int choice;
@@ -97,9 +104,50 @@ void Manager::test()
 	} while (choice != 0);
 }
 
-void Manager::addGraph(string name)
+
+Graph* Manager::addGraph(string name)
 {
 	Graph* newGraph = new Graph(name);
 	graphs.push_back(newGraph);
+    curUser->graphsId.push_back(newGraph->getID());
+    cout << "sz: " << graphs.size() << '\n';
 	++graphsCounter;
+    return newGraph;
+}
+User* Manager::addUser(string name, string password)
+{
+    User* newUser = new User(name, password);
+    users[name] = newUser;
+    ++usersCounter;
+    return newUser;
+}
+// void Manager::addFromFile(int graphId, std::string graphName, vector<vector<string>> nodes, vector<vector<string>> edges) {
+//     Graph* insertedGraph = new Graph(graphId, graphName, nodes, edges);
+//     graphs.push_back(insertedGraph);
+//     ++graphsCounter;
+// }
+void Manager::testGraph() {
+    if(curGraph == NULL)
+        return;
+   // curGraph->testMe();
+}
+void Manager::start() {
+    addGraph("Me");
+    addGraph("New");
+    // cout << "Select a graph: \n";
+    // for(auto i : graphs)
+    //     cout << i->getName() << ' ';
+    string name; cin >> name;
+    Graph* desiredGraph = findGraph(-1, name);
+    enterGraph(desiredGraph);
+
+    testGraph();
+    // graphs.back()->testMe();
+    cout << graphsCounter << '\n';
+}
+void Manager::enterGraph(Graph* graph) {
+    if(graph == nullptr)
+        return cout << "\nEnter a valid graph!\n", void();
+    cout << "You entered " << graph->getName() << " successfully\n";
+    curGraph = graph;
 }
