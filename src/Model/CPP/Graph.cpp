@@ -14,12 +14,16 @@ Graph::Graph(int id, string name , bool root , int ndfn, const vector<vector<str
 	:id(id),name(name),root(root),ndfn(ndfn) {
 	
 	for (int i = 0; i < (int)nodes.size(); ++i) {
-		Node* newNode = new Node(nodes[i][0]);
-
-		for (int j = 1; j < nodes[i].size(); ++j)
+		for(auto i : nodes[i]) {
+			cout << i << " ";
+		}
+		cout << endl;
+		Node* newNode = new Node(nodes[i][1]); // name
+		newNode->id = stoi(nodes[i][0]); // id
+		for (int j = 2; j < nodes[i].size(); ++j) // neighbours
 			newNode->edges.insert(nodes[i][j]);
-
-		this->nodes[nodes[i][0]] = newNode;
+		cout << "Node: " << i << " " << newNode->id << " " << newNode->name << endl; // debug
+		this->nodes[newNode->name] = newNode;
 	}
 
 	for (auto& i : edges) {

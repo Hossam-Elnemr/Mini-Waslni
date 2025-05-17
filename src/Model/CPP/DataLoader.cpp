@@ -55,8 +55,7 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
                     cerr << "Error: Invalid node format\n";
                     continue;
                 }
-
-                
+                cout << "Node: " << nodeId << " " << nodeName  <<  " debug"<< endl; // debug
                 nodeData.push_back(nodeId);
                 nodeData.push_back(nodeName);
 

@@ -107,12 +107,13 @@ void testPathFinder() {
 int main() {
 	Manager m = Manager::getInstance();
 	// testPathFinder();
-	// loadGraphTest();
-	loadUserTest();
+	loadGraphTest();
+	// loadUserTest();
 	//sampleUserTest();
-	 Graph::test();
-	// Model::DataSaver::saveGraphData();
-	Model::DataSaver::saveUserData();
+    // sampleGraphTest();
+	//  Graph::test();
+	Model::DataSaver::saveGraphData();
+	// Model::DataSaver::saveUserData();
 	// cout << Manager::getInstance().users.size() << "\n";
 	// for (const pair<string,User*>& user : Manager::getInstance().users) {
 	// 	cout << user.second->toString() << "\n";
