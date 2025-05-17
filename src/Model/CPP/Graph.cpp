@@ -114,10 +114,14 @@ void Graph::deleteEdge(string name) {
 	bool directed = edge->directed;
 
 	//Mixed Graph
-	bool bridge = 1;
+	int bridge = 1;
+	if (!edge->directed) {
+		bridge = 2;
+		BFS(dest->name, bridge, name);
+	}
 	BFS(src->name, bridge, name);
-	if (bridge) {
-		cout << "Watch out this a bridge, do you reraly want to delete it ? y/n ";
+	if (bridge != 0) {
+		cout << "Watch out this a bridge, do you want to delete it ? y/n ";
 		char ans; cin >> ans;
 		if (ans == 'n') return;
 	}
@@ -306,23 +310,23 @@ void Graph::test() {
 	g->addEdge("First edge", "Cairo", "Giza", 4, false);
 	g->addEdge("second edge", "Giza", "Alex", 4, false);
 	g->addEdge("third edge", "Alex", "Cairo", 4, false);
-	g->addEdge("fourth edge", "Alex", "Matrouh", 4, false);
-	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
+	g->addEdge("fourth edge", "Alex", "Matrouh", 4, true);
+	g->addEdge("Fifth edge", "Matrouh", "Suez", 4, true);
 	g->addEdge("six edge", "Suez", "Fayoum", 4, false);
-	g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
+	g->addEdge("seven edge", "Matrouh", "Fayoum", 4, false);
 	g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);
 
-	g->tarjan("Matrouh");
+	//g->tarjan("Cairo");
 
-	//g->deleteEdge("First edge");
-	cout << "third edge" << " " << g->bridge["third edge"] << endl;
+	g->deleteEdge("six edge");
+	/*cout << "third edge" << " " << g->bridge["third edge"] << endl;
 	cout << "First edge" << " " << g->bridge["First edge"] << endl;
 	cout << "second edge" << " " << g->bridge["second edge"] << endl;
 	cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
 	cout << "Fifth edge" << " " << g->bridge["Fifth edge"] << endl;
 	cout << "six edge" << " " << g->bridge["six edge"] << endl;
 	cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
-	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;
+	cout << "eight edge" << " " << g->bridge["eight edge"] << endl;*/
 
 	/*cout << "----------------------------------------" << endl;
 
