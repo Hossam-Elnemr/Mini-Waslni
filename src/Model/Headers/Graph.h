@@ -39,7 +39,7 @@ public:
 	Path fastestPath(string source, string destination);
 	vector<string> DFS(string name, unordered_map<string, bool>& visited, vector<string>& cities);
 	vector<string> DFS(string name);
-	vector<string> BFS(string name, bool &warning, string Removed);
+	vector<string> BFS(string name, int &warning, string Removed);
 	void tarjan(string node, string parent = "");
 
 	//							Getters-Setters & Testing
