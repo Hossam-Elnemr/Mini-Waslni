@@ -165,7 +165,7 @@ void Graph::undo() {
 }
 
 //								Traverse
-vector<string> Graph::BFS(string name, bool &warning, string Removed = "") {
+vector<string> Graph::BFS(string name, int &warning, string Removed = "") {
 	if (!nodeIsFound(name))
 		return std::cout << "node not found!\nEnter a valid node.\n", vector<string>();
 
@@ -176,15 +176,17 @@ vector<string> Graph::BFS(string name, bool &warning, string Removed = "") {
 	string src = name;
 	q.push(src);
 	visited[name] = true;
-	//Attached Node to the possible Bridge
-	string AttachedNode = edges[Removed]->destination;
+	//Attached Nodes to the possible Bridge
+	string AttachedNode;
+	edges[Removed]->source == name? AttachedNode = edges[Removed]->destination : AttachedNode = edges[Removed]->source;
+	
 	while (!q.empty()) {
 		string node = q.front();
 		q.pop();
 		result.push_back(node);
 		// Check if node can be reached from another way
 		if (node == AttachedNode) {
-			warning = 0;
+			warning --;
 			break;
 		}
 		for (auto edge: nodes[node]->edges) {
