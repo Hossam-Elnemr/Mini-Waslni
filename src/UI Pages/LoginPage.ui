@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LoginPageClass</class>
+ <widget class="QMainWindow" name="LoginPageClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>901</width>
+    <height>616</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Login Page</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color:#f0f5f5;
+</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="styleSheet">
+       <string notr="true">#widget{background-image: url(:/newPrefix/color-backgrond.jpg);
+background-repeat: no-repeat;
+    background-position: center;
+    background-origin: content;
+}</string>
+      </property>
+      <widget class="QLabel" name="carbackground">
+       <property name="geometry">
+        <rect>
+         <x>392</x>
+         <y>112</y>
+         <width>381</width>
+         <height>368</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background-color: white;
+
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>car-background.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>110</y>
+         <width>361</width>
+         <height>371</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 3px solid transparent;
+background-color:white;
+border-radius:10px</string>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QLineEdit" name="user">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>150</y>
+          <width>221</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe MDL2 Assets</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: white; 
+color: black;
+border-radius: 30px;
+padding: 5px;
+border: 1px solid #ffa31a;
+</string>
+        </property>
+        <property name="placeholderText">
+         <string>enter your username </string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="pass">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>220</y>
+          <width>221</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: white; 
+color: black;
+border-radius: 30px;
+padding: 5px;
+border: 1px solid #ffa31a;
+</string>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::EchoMode::Normal</enum>
+        </property>
+        <property name="placeholderText">
+         <string>enter the password </string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="log">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>290</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 3px solid  #ffa31a;
+font-weight : bold;
+font-size : 16px;
+color:white;
+background-color:#ffa31a;</string>
+        </property>
+        <property name="text">
+         <string>login</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="sign">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>290</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 3px solid  #ffa31a;
+font-weight : bold;
+font-size : 16px;
+color:white;
+background-color:#ffa31a;</string>
+        </property>
+        <property name="text">
+         <string>signUp</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="welcom">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>281</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-size: 27px;
+font-weight:bold;</string>
+        </property>
+        <property name="text">
+         <string>welcome to Wasalni!</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>110</y>
+          <width>171</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:#ffa31a;</string>
+        </property>
+        <property name="text">
+         <string>please login to your account</string>
+        </property>
+       </widget>
+       <widget class="QToolButton" name="togglePasswordButton">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>225</y>
+          <width>31</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="face-wink"/>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="log.qrc"/>
+ </resources>
+ <connections/>
+</ui>
