@@ -1,18 +1,16 @@
-#ifndef User_H
-#define User_H
+#pragma once
 # include "Globals.h"
 using namespace std;
 class User {
 	string password;
 public:
+    User(string userName, string password);
 	int id;
 	string userName;
-	stack<pair<string,string>> recentSearch, undo;
+    stack<pair<string,string>> recentSearch, undo;
 	vector<int>graphsId;
-
-	User(string userName, string password);
+    vector<std::string> history;////////////
+    string getpassword();
+    string toString();
 	bool editGraphCheck(int id);
-	string toString();
-	string getPassword();
 };
-#endif
