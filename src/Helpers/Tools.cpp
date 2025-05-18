@@ -13,6 +13,10 @@ bool Tools::validateName(string name, QMainWindow* w) {
     return true;
 }
 
+bool Tools::validateSize(string name, QMainWindow* w) {
+    return name.size() <= 2;
+}
+
 void Tools::FirstCharacter(QMainWindow* w) {
     QMessageBox::warning(w, "Invalid Input", "First character MUST be alphabet.");
 }
