@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="back">
+    <file>graphPageBackground.jpg</file>
+  </qresource>
+  <qresource>
+    <file>icon.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="QtWidgetsApplication1">
+    <file>icon.png</file>
+    <file>color-backgrond.jpg</file>
+  </qresource>
+</RCC>
