@@ -1,11 +1,10 @@
-#ifndef Node_H
-#define Node_H
+#pragma once
 # include "Globals.h"
-# include "../../Helpers/Tools.h"
+# include "Tools.h"
 class Node {
 public:
 	string name;
-	int id, graphId;
+    int id, graphId, iconId;
 	Node(std::string name);
 	~Node();
 	unordered_set<string> edges;
@@ -13,4 +12,3 @@ public:
 	string to_string();
 	static int numberOfNodes;
 };
-#endif
