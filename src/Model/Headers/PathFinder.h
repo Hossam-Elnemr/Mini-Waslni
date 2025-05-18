@@ -1,7 +1,5 @@
-#ifndef PathFinder_H
-#define PathFinder_H
 #include "Globals.h"
-#include "../Headers/Path.h"
+#include "Path.h"
 
 namespace Model {
 
@@ -11,7 +9,8 @@ namespace Model {
 
 		Path findPath(string source, string destination, unordered_map<string, Node*>& nodes,
 			unordered_map<string, Edge*>& edges, bool isShortest = 1);
+        Path newfindPath(string source, string destination, unordered_map<string, Node*>& nodes,
+            unordered_map<string, Edge*>& edges, unordered_map<string, vector<pair<double, string>>> &adj, bool isShortest = 1);
 	};
 
 }
-#endif
