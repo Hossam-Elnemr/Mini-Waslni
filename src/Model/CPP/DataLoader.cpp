@@ -1,6 +1,6 @@
-#include "../Headers/DataLoader.h"
-#include "../Headers/Manager.h"
-#include "../Headers/FileManager.h"
+#include "DataLoader.h"
+#include "Manager.h"
+#include "FileManager.h"
 using namespace std;
 using namespace Model;
 
@@ -12,22 +12,21 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
 
     try {
         int graphsNo = stoi(fileContent[0]);
-        Graph::numberOfGraphs = graphsNo;
+        // Graph::numberOfGraphs = graphsNo;
 
-        
         for (int i = 1; i < fileContent.size(); ++i) {
             string line = fileContent[i];
             int dollarPos = line.find('$');
             int atPos = line.find('@');
-            
+
             // Parse header
             string headerPart = line.substr(0, dollarPos);
             istringstream headerIss(headerPart);
             string id, graphName, root, ndfn;
-            
-            if (!getline(headerIss, id, ',') || 
-                !getline(headerIss, graphName, ',') || 
-                !getline(headerIss, root, ',') || 
+
+            if (!getline(headerIss, id, ',') ||
+                !getline(headerIss, graphName, ',') ||
+                !getline(headerIss, root, ',') ||
                 !getline(headerIss, ndfn, ',')) {
                 cerr << "Error: Invalid header format\n";
                 continue;
@@ -44,20 +43,23 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
             string nodePart = line.substr(dollarPos + 2, atPos - dollarPos - 2);
             istringstream nodeIss(nodePart);
             string nodeInfo;
-                
+
             while (getline(nodeIss, nodeInfo, '~')) {
+                cerr << "soaiodkakoskdosoijdoiajdo";
                 istringstream nodeDetailIss(nodeInfo);
                 vector<string> nodeData;
                 string nodeId, nodeName;
-                
-                if (!getline(nodeDetailIss, nodeId, ',') || 
+
+                if (!getline(nodeDetailIss, nodeId, ',') ||
                     !getline(nodeDetailIss, nodeName, ',')) {
                     cerr << "Error: Invalid node format\n";
                     continue;
                 }
-                cout << "Node: " << nodeId << " " << nodeName  <<  " debug"<< endl; // debug
+
+
                 nodeData.push_back(nodeId);
                 nodeData.push_back(nodeName);
+                cerr << "Loading... " << nodeName << '\n';
 
                 string edgeName;
                 while (getline(nodeDetailIss, edgeName, ',')) {
@@ -73,17 +75,17 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
             string edgePart = line.substr(atPos + 1);
             istringstream edgeIss(edgePart);
             string edgeInfo;
-            
+
             while (!edgeIss.eof()) {
                 string edgeName, source, destination, length, isDirected, edgeId, edgeGraphId, trafficLoad;
-                
-                if (!getline(edgeIss, edgeName, ',') || 
-                    !getline(edgeIss, source, ',') || 
-                    !getline(edgeIss, destination, ',') || 
-                    !getline(edgeIss, length, ',') || 
-                    !getline(edgeIss, isDirected, ',') || 
-                    !getline(edgeIss, edgeId, ',') || 
-                    !getline(edgeIss, edgeGraphId, ',') || 
+
+                if (!getline(edgeIss, edgeName, ',') ||
+                    !getline(edgeIss, source, ',') ||
+                    !getline(edgeIss, destination, ',') ||
+                    !getline(edgeIss, length, ',') ||
+                    !getline(edgeIss, isDirected, ',') ||
+                    !getline(edgeIss, edgeId, ',') ||
+                    !getline(edgeIss, edgeGraphId, ',') ||
                     !getline(edgeIss, trafficLoad, ',')) {
                     if (!edgeName.empty()) {
                         cerr << "Error: Invalid edge format\n";
@@ -94,13 +96,15 @@ void DataLoader::loadGraphsFromFile(const vector<string>& fileContent) {
                 vector<string> edgeData = {edgeName, source, destination, length, isDirected, edgeId, edgeGraphId, trafficLoad};
                 edges.push_back(edgeData);
             }
-
+            cerr << nodes.back().back() << '\n';
             Graph* graph = new Graph(graphId, graphName, graphRoot, graphNdfn, nodes, edges);
-            Manager::getInstance().graphs.push_back(&(*graph));
+            cerr << "yyyyyy " << (graph->nodes.begin()->first);
+            Manager::getInstance()->graphs.push_back(graph);
         }
         cout << "loaded graphs\n";
-        Manager::getInstance().graphsCounter = graphsNo;
-        Graph::numberOfGraphs = graphsNo;
+        Manager::getInstance()->graphsCounter = graphsNo;
+        cout << " 10:20 am: " << Manager::getInstance()->graphsCounter << '\n';
+        // Graph::numberOfGraphs = graphsNo;
 
     }
     catch (const std::exception& e) {
@@ -117,24 +121,24 @@ void DataLoader::loadUsersFromFile(const vector<string>& fileContent) {
 
     try {
         int usersNo = stoi(fileContent[0]);
-        
+
         for (int i = 1; i < fileContent.size(); ++i) {
             string line = fileContent[i];
-            
+
             //Main user info part
             int dollarPos = line.find('$');
             string mainInfo = line.substr(0, dollarPos);
             istringstream mainIss(mainInfo);
             string id, userName, password;
-            
-            if (!getline(mainIss, id, ',') || 
-                !getline(mainIss, userName, ',') || 
+
+            if (!getline(mainIss, id, ',') ||
+                !getline(mainIss, userName, ',') ||
                 !getline(mainIss, password, ',')) {
                 cerr << "Error: Invalid user format\n";
                 continue;
             }
 
-            
+
             User* user = new User(userName, password);
             user->id = stoi(id);
 
@@ -148,9 +152,9 @@ void DataLoader::loadUsersFromFile(const vector<string>& fileContent) {
                 int del = search.find('`');
                 string first = search.substr(0, del);
                 string second = search.substr(del + 1);
-                if (!first.empty() && !second.empty()) 
+                if (!first.empty() && !second.empty())
                     user->recentSearch.push(make_pair(first, second));
-                else 
+                else
                     cerr << "Error: Invalid search format\n";
 
             }
@@ -170,13 +174,13 @@ void DataLoader::loadUsersFromFile(const vector<string>& fileContent) {
             istringstream graphIss(graphIds);
             string graphId;
 
-            while (getline(graphIss, graphId, ',')) 
-                if (!graphId.empty()) 
+            while (getline(graphIss, graphId, ','))
+                if (!graphId.empty())
                     user->graphsId.push_back(stoi(graphId));
-                
-            
 
-            Manager::getInstance().users[userName] = user;
+
+            Manager::getInstance()->users[userName] = user;
+            Manager::getInstance()->usersInfo[userName] = password;
         }
         cout << "Loaded users\n";
     }
