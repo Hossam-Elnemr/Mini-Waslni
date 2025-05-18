@@ -1,4 +1,8 @@
-#include "../Headers/User.h"
+#include "User.h"
+string User::getpassword() {
+    return password;
+}
+
 User::User(string userName, string password) {
 	this->userName = userName;
 	this->password = password;
@@ -10,33 +14,27 @@ bool User::editGraphCheck(int id) {
 	return false;
 }
 
-//to save in file
-//format: userName password
 string User::toString() {
-	string result = std::to_string(id) + "," + userName + "," + password;
-    
+    string result = std::to_string(id) + "," + userName + "," + password;
+
     result += "$";
     stack<pair<string,string>> tempStack = recentSearch;
     while (!tempStack.empty()) {
         result += tempStack.top().first + "`" + tempStack.top().second + ",";
         tempStack.pop();
     }
-    
+
     // result += "@";
     // tempStack = undo;
     // while (!tempStack.empty()) {
     //     result += tempStack.top() + ",";
     //     tempStack.pop();
     // }
-		
+
     result += "#";
     for (int graphId : graphsId) {
         result += std::to_string(graphId) + ",";
     }
-    
-    return result;
-}
 
-string User::getPassword() {
-	return password;
+    return result;
 }
