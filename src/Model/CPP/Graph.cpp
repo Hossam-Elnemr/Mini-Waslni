@@ -1,48 +1,103 @@
-# include "Graph.h"
-int Graph::numberOfGraphs = 0;
-Graph::Graph(string name) {
-	this->name = name;
-	id = numberOfGraphs++;
-    ndfn = 1;
-    root = false;
-}
-Graph::Graph(int id, string name , bool root , int ndfn, const vector<vector<string>>& nodes, const vector<vector<string>>& edges)
-    :id(id), name(name), root(root), ndfn(ndfn) {
+#include "GraphPage.h"
+#include <QIcon>
+GraphPage::GraphPage(Graph* g,QWidget *parent) : graph(g), QMainWindow(parent)
+{
+    ui.setupUi(this);
+    QGraphicsDropShadowEffect* shadow = new QGraphicsDropShadowEffect();
+    // cerr << "\nGraphPage " << (g == nullptr) << '\n';
+    Manager::getInstance()->enterGraph(g);
 
-    for (int i = 0; i < (int)nodes.size(); ++i) {
-        for(auto i : nodes[i]) {
-            cout << i << " ";
+    shadow->setBlurRadius(15);
+    shadow->setOffset(0, 4);
+    shadow->setColor(QColor(0, 0, 0, 80));
+    ui.widget_2->setGraphicsEffect(shadow);
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(170, 10, 781, 541);
+    QPixmap background("D:/Test//mapBackground.jpg");
+    QPixmap scaledBg = background.scaled(scene->sceneRect().size().toSize(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    // cerr << "\nmid\n";
+    scene->setBackgroundBrush(QBrush(scaledBg));
+    ui.graphicsView->setScene(scene);
+    // cerr << "\nbefore\n";
+    graph = g;
+    displayGraph();
+    cerr << "\nafter\n";
+    connect(ui.addcity, &QPushButton::clicked, this, [=] {
+        addCity();
+    });
+    // connect(ui.addcity, &QPushButton::clicked, this, &GraphPage::addCity);
+    connect(ui.delcity, &QPushButton::clicked, this, &GraphPage::deleteCity);
+    connect(ui.pushButton, &QPushButton::clicked, this, &GraphPage::findTour);
+    connect(ui.addedge, &QPushButton::clicked, this, &GraphPage::addEdge);
+    connect(ui.fastestButton, &QPushButton::clicked, this, &GraphPage::findFastest);
+    connect(ui.shortestButton, &QPushButton::clicked, this, &GraphPage::findShortest);
+    connect(ui.deledge, &QPushButton::clicked, this, &GraphPage::deleteEdge);
+    connect(ui.undo_Button, &QPushButton::clicked, this, &GraphPage::undo);
+
+    cerr << " here\n";
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() {
+        for (auto e : edges) {
+            QPointF start = getCityPosition(QString::fromStdString(e.second->source)) + QPointF(50, 50);
+            QPointF end = getCityPosition(QString::fromStdString(e.second->destination)) + QPointF(50, 50);
+
+            e.first->setLine(QLineF(start, end));
+            double ratio = static_cast<double>(e.second->trafficLoad) / ((graph->getTotalTraffic() + 1));
+            qDebug() << "ratio for:"<<e.second->name<<" is: " << ratio;
+            QColor color;
+            if (ratio < 0.2)
+                color = Qt::blue;
+            else if (ratio < 0.5)
+                color = QColor(255, 165, 0);
+            else
+                color = Qt::red;
+
+            QPen pen(color, 2, Qt::DashLine);
+            e.first->setPen(pen);
         }
-        cout << endl;
-        Node* newNode = new Node(nodes[i][1]); // name
-        newNode->id = stoi(nodes[i][0]); // id
-        for (int j = 2; j < nodes[i].size(); ++j) // neighbours
-            newNode->edges.insert(nodes[i][j]);
-        cout << "Node: " << i << " " << newNode->id << " " << newNode->name << endl; // debug
-        this->nodes[newNode->name] = newNode;
-    }
+    });
+    timer->start(100);
 
-    for (auto& i : edges) {
-        Edge* newedge = new Edge(i[0], i[1], i[2], std::stod(i[3]), std::stoi(i[4]) , std::stoi(i[5]), std::stoi(i[6]) , std::stod(i[7]));
-        this->edges[newedge->name] = newedge;
+    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+    startTimer(100);
+
+    ui.groupBox->setEnabled(false);
+    ui.groupBox_2->setEnabled(false);
+    ui.graphicsView->setMouseTracking(true);
+    ui.graphicsView->viewport()->setMouseTracking(true);
+    ui.graphicsView->viewport()->installEventFilter(this);
+    cout << "NOW " << Manager::curUser->userName << '\n';
+    for (auto id : Manager::curUser->graphsId) {
+        cout << '\n' << Manager::curUser->id << ' ' << id << '\n';
+        if (Manager::curUser->editGraphCheck(graph->getID())) {
+            ui.groupBox->setEnabled(true);
+            ui.groupBox_2->setEnabled(true);
+            break;
+        }
     }
-    cerr << "G Constr " << this->nodes.begin()->first << '\n';
-    numberOfGraphs++;
+    ui.undo_Button->setIcon(QIcon("D:/Test/undoicon"));
+    ui.undo_Button->setIconSize(QSize(48, 48));
 }
 
 
-
-
-
-
-
-
-//                         **************************** Validations ****************************
-bool Graph::nodeIsFound(std::string name) {
-	return nodes.find(name) != nodes.end();
-}
-bool Graph::edgeIsFound(std::string name) {
-	return edges.find(name) != edges.end();
+void GraphPage::displayGraph()
+{
+    cerr << "\nEntered displayGraph\n";
+    cerr << "is null? " << (graph == nullptr) << '\n';
+    cerr << "graphName: " << graph->getName() << '\n';
+    for (auto c : graph->nodes) {
+        addCity(c.first);
+    }
+    cerr << "\nDone adding nodes\n";
+    for (auto e : graph->edges) {
+        QPointF start = getCityPosition( QString::fromStdString(e.second->source));
+        QPointF end = getCityPosition( QString::fromStdString(e.second->destination));
+        QPen pen(Qt::blue, 2, Qt::DashLine);
+        animatedLine = scene->addLine(QLineF(start + QPointF(50, 50), end + QPointF(50, 50)), pen);
+        animatedLine->setZValue(-1);
+        edges.append(make_pair(animatedLine, graph->edges[e.first]));
+    }
 }
 
 
@@ -54,120 +109,412 @@ bool Graph::edgeIsFound(std::string name) {
 
 
 //                         **************************** Modify Graph ****************************
-void Graph::addNode(string name) {
-	for (auto s : name)
-		if (Tools::isSpecialChar(s))
-			return std::cout << "Special characters not allowed!", void();
-	if (nodeIsFound(name))
-		return std::cout << "node Name is found!\nEnter another name\n", void();
 
-	Node* newnode = new Node(name);
-	nodes[newnode->name] = newnode;
-	if (!isUndo)
-		lastOperations.push({1, name, vector<Edge>()});
-}
-
-void Graph::addEdge(string name, string src, string dest, int length, bool directed) {
-	for (auto s : name)
-		if (Tools::isSpecialChar(s))
-			return std::cout << "Special characters not allowed!", void();
-
-	if (src == dest || !nodeIsFound(src) || !nodeIsFound(dest) || edgeIsFound(name))
-		return std::cout << "Error!!\nEnter a new edge name between two different existing nodes!\n", void();
-
-	if (length <= 0)
-		return std::cout << "Enter a positive integer for length.\n", void();
-
-	Edge* newEdge = new Edge(name, src, dest, length, directed);
-
-	newEdge->setGraphid(id);
-	edges[name] = newEdge;
-
-	std::cout << src << " -> " << dest << '\n';
-
-	getNode(src)->edges.insert(name);
-	if (!directed) {
-		getNode(dest)->edges.insert(name);
-		std::cout << dest << " -> " << src << '\n';
-	}
-	if(!isUndo)
-		lastOperations.push({2, "", vector<Edge>(1, *newEdge)});
-}
-
-void Graph::deleteNode(string name) {
-	if (!nodeIsFound(name))
-		return cout << "node not found!\n", void();
-
-	unordered_map<string, Edge*> temp = edges;
-	Node* deletednode = getNode(name);
-	vector<Edge> deletedEdges;
-
-	for (auto var : temp) {
-		string edgeName = var.first;
-		auto edge = var.second;
-
-		if (name == edge->source || name == edge->destination) {
-			deletedEdges.push_back(*edge);
-			deleteEdge(edgeName);
-		}
-	}
-
-	if (!isUndo)
-		lastOperations.push({3, name, deletedEdges});
-	delete deletednode;
-	nodes.erase(name);
-}
-
-void Graph::deleteEdge(string name) {
-	if (!edgeIsFound(name))
-		return cout << "Road not found!\n", void();
-
-    auto edge = edges[name];
-	Node* src = getNode(edge->source), *dest = getNode(edge->destination);
-	bool directed = edge->directed;
-
-
-
-
-	src->edges.erase(name);
-	if(!directed)
-		dest->edges.erase(name);
-
-	if(!isUndo)
-		lastOperations.push({4, "", vector<Edge>(1, *edge)});
-	delete edge;
-	edges.erase(name);
-}
-
-void Graph::undo() {
-    if (lastOperations.empty()) {
-        //do nothing
+void GraphPage::addCity() {
+    if (!scene) return;
+    QString cityName = ui.cityname->text();
+    if (ui.cityname->text().isEmpty()) {
+        QMessageBox::warning(this, "Input Required", "Please fill in the field.");
         return;
     }
+    if(!Tools::validateName(cityName.toStdString(), this)) {
+        return;
+    }
+    if(graph->nodeIsFound(cityName.toStdString()))
+    {
+        QMessageBox::warning(this, "Invalid Input", "This City Already Exists , Please Enter Another Name");
+        return;
+    }
+    graph->addNode(cityName.toStdString());
+    QStringList iconPaths = {
+                             "D:/Test/city1.png",
+                             "D:/Test/city2.png",
+                             "D:/Test/city3.png",
+                             "D:/Test/city4.png",
+                             "D:/Test/city5.png",
+                             "D:/Test/city6.png",
+                             "D:/Test/city7.png",
+                             "D:/Test/city8.png",
+                             "D:/Test/city9.png",
+                             "D:/Test/city10.png",
+                             "D:/Test/city11.png",
+                             "D:/Test/city12.png",
+                             "D:/Test/city13.png",
+                             "D:/Test/city14.png",
+                             "D:/Test/city15.png",
+                             "D:/Test/city16.png",
+                             "D:/Test/city17.png",
+                             "D:/Test/city18.png",
+                             "D:/Test/city19.png",
+                             "D:/Test/city20.png",
+                             "D:/Test/city21.png"
+    };
+    int randomIndex = QRandomGenerator::global()->bounded(iconPaths.size());
+    QPixmap cityIcon(iconPaths[randomIndex]);
+    cityIcon = cityIcon.scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    qreal x = QRandomGenerator::global()->bounded(180, 660);
+    qreal y = QRandomGenerator::global()->bounded(10, 350);
+
+
+    QGraphicsPixmapItem* item = scene->addPixmap(cityIcon);
+    item->setPos(QPointF(x, y));
+    QGraphicsTextItem* label = scene->addText(cityName);
+    label->setPos(x , y -25);
+
+    QFont font("Segoe UI", 12, QFont::Bold);
+    font.setItalic(true);
+    font.setLetterSpacing(QFont::AbsoluteSpacing, 2);
+    label->setFont(font);
+    label->setDefaultTextColor(Qt::darkBlue);
+
+    QGraphicsItemGroup* group = scene->createItemGroup({ item, label });
+    group->setFlag(QGraphicsItem::ItemIsMovable);
+
+    cityGroups[cityName] = group;
+    cityGraphics[cityName.toStdString()]=randomIndex;
+    graph->nodes[cityName.toStdString()]->iconId = randomIndex;
+    cerr << cityName.toStdString() << '\n';
+    if(!isUndo)
+    {
+        vector<Edge> v;
+        for(auto edge:graph->nodes[cityName.toStdString()]->edges)
+            v.push_back(Edge( graph->edges[edge]->name,graph->edges[edge]->source,graph->edges[edge]->destination,graph->edges[edge]->length,graph->edges[edge]->directed));
+
+        lastOperations.push({1,cityName.toStdString(),v});
+    }
+}
+
+
+
+void GraphPage::addCity(string cityName) {
+    if (!scene) return;
+    cerr << "\nadding....\n";
+    QStringList iconPaths = {
+        "D:/Test/city1.png",
+        "D:/Test/city2.png",
+        "D:/Test/city3.png",
+        "D:/Test/city4.png",
+        "D:/Test/city5.png",
+        "D:/Test/city6.png",
+        "D:/Test/city7.png",
+        "D:/Test/city8.png",
+        "D:/Test/city9.png",
+        "D:/Test/city10.png",
+        "D:/Test/city11.png",
+        "D:/Test/city12.png",
+        "D:/Test/city13.png",
+        "D:/Test/city14.png",
+        "D:/Test/city15.png",
+        "D:/Test/city16.png",
+        "D:/Test/city17.png",
+        "D:/Test/city18.png",
+        "D:/Test/city19.png",
+        "D:/Test/city20.png",
+        "D:/Test/city21.png"
+    };
+    cerr << "\nAfter Icons\n";
+    cerr << "graph size: " << graph->nodes.size() << '\n';
+    cerr << "name: " << cityName << ' ' << " is found? " << (graph->nodes.find(cityName) == graph->nodes.end())
+         << "\nIcon index: " << graph->nodes[cityName]->iconId << '\n';
+    graph->nodes[cityName]->iconId = QRandomGenerator::global()->bounded(iconPaths.size());
+    QPixmap cityIcon(iconPaths[graph->nodes[cityName]->iconId]);
+    cerr << "after\n";
+    cityIcon = cityIcon.scaled(70, 70, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    qreal x = QRandomGenerator::global()->bounded(180, 660);
+    qreal y = QRandomGenerator::global()->bounded(10, 350);
+
+    QGraphicsPixmapItem* item = scene->addPixmap(cityIcon);
+    item->setPos(QPointF(x, y));
+    QGraphicsTextItem* label = scene->addText(QString::fromStdString(cityName));
+    label->setPos(x, y - 25);
+
+    QFont font("Segoe UI", 12, QFont::Bold);
+    font.setItalic(true);
+    font.setLetterSpacing(QFont::AbsoluteSpacing, 2);
+    label->setFont(font);
+    label->setDefaultTextColor(Qt::darkBlue);
+
+    QGraphicsItemGroup* group = scene->createItemGroup({ item, label });
+    group->setFlag(QGraphicsItem::ItemIsMovable);
+
+    cityGroups[QString::fromStdString(cityName)] = group;
+}
+
+void GraphPage::addEdge() {
+    if(!scene)
+        return;
+
+    QString name = ui.lineEdit->text();
+    QString from = ui.from->text();
+    QString to = ui.to->text();
+    int length = ui.len->text().toInt();
+    bool directed = ui.directed->isChecked();
+    if (name.isEmpty() || from.isEmpty() || to.isEmpty() || ui.len->text().isEmpty()) {
+        QMessageBox::warning(this, "Input Required", "All fields must be filled.");
+        return;
+    }
+    if (from == to) {
+        QMessageBox::warning(this, "Invalid Input", "Source and destination cities cannot be the same.");
+        return;
+    }
+    if (!graph->nodeIsFound(from.toStdString()) || !graph->nodeIsFound(to.toStdString())) {
+        QMessageBox::warning(this, "Invalid City", "One or both cities do not exist in the graph.");
+        return;
+    }
+    if (length <= 0) {
+        QMessageBox::warning(this, "Invalid Length", "Length must be a positive integer.");
+        return;
+    }
+    if (graph->edgeIsFound(name.toStdString())) {
+        QMessageBox::warning(this, "Duplicate Edge", "An edge with this name already exists.");
+        return;
+    }
+    if(!Tools::validateName(name.toStdString(), this)) {
+        return;
+    }
+    graph->addEdge(name.toStdString(), from.toStdString(), to.toStdString(), length, directed);
+
+    if (!cityGroups.contains(from) || !cityGroups.contains(to)) return;
+    QGraphicsItemGroup* fromGroup = cityGroups[from];
+    QGraphicsItemGroup* toGroup = cityGroups[to];
+    QPointF fromPos = getCityPosition(from);
+    QPointF toPos = getCityPosition(to);
+    if (fromPos == QPointF(-1, -1) || toPos == QPointF(-1, -1)) {
+        QMessageBox::warning(this, "Invalid City", "From or To city doesn't exist.");
+        return;
+    }
+    drawAnimatedLine(fromPos, toPos, name, from, to);
+    qDebug() << getCityPosition(from).x();
+    auto edge= graph->edges[name.toStdString()];
+    vector<Edge>v;
+    v.push_back(Edge( edge->name,edge->source,edge->destination,edge->length,edge->directed));
+
+    if(!isUndo)
+        lastOperations.push({2, "", v});
+}
+
+void GraphPage::deleteCity() {
+    inOperation = 1;
+    fromDeleteCity=true;
+    QString cityName = ui.cityname->text();
+    if (!graph->nodeIsFound(cityName.toStdString())) {
+        QMessageBox::warning(this, "Invalid Input", "Please Enter a Valid City Name");
+        return;
+    }
+    Node* node = graph->getNode(cityName.toStdString());
+    unordered_set<string>edgeNames = node->edges;
+    if(!isUndo)
+    {
+        vector<Edge> v;
+
+        cerr<<cityName.toStdString();
+        cerr<<"Noooooooooooo";
+        cerr<<graph->nodes[cityName.toStdString()]->edges.size();
+        for(auto edge:graph->nodes[cityName.toStdString()]->edges)
+            v.push_back(Edge( graph->edges[edge]->name,graph->edges[edge]->source,graph->edges[edge]->destination,graph->edges[edge]->length,graph->edges[edge]->directed));
+        lastOperations.push({3,cityName.toStdString(),v});
+    }
+    for (auto edg : edgeNames) {
+        ui.lineEdit->setText(QString::fromStdString(edg));
+        deleteEdge();
+    }
+
+
+    for (QGraphicsItem* item : scene->items()) {
+        QGraphicsItemGroup* group = qgraphicsitem_cast<QGraphicsItemGroup*>(item);
+        if (group && group->childItems().size() >= 2) {
+            QGraphicsTextItem* label = qgraphicsitem_cast<QGraphicsTextItem*>(group->childItems().at(1));
+            if (label && label->toPlainText() == cityName) {
+                scene->removeItem(group);
+                delete group;
+                break;
+            }
+        }
+    }
+    inOperation = 0;
+    fromDeleteCity = false;
+    graph->deleteNode(cityName.toStdString());
+}
+
+void GraphPage::deleteEdge() {
+    string edgeName = ui.lineEdit->text().toStdString();
+    if (!graph->edgeIsFound(edgeName)) {
+        QMessageBox::warning(this, "Invalid Input", "Please Enter a Valid Edge Name");
+        return;
+    }
+    // cerr << "\nStarted Deleting edge.....\n";
+    // cout << "Is it? " << graph->bridgeBFS(graph->edges[edgeName]->source, edgeName) << '\n';
+    // graph->tarjan(graph->edges[edgeName]->source, "");
+    int bridge = 1;
+    auto edge = graph->edges[edgeName];
+    vector<Edge>v;
+    v.push_back(Edge( graph->edges[edgeName]->name,graph->edges[edgeName]->source,graph->edges[edgeName]->destination,graph->edges[edgeName]->length,graph->edges[edgeName]->directed));
+
+    string src = edge->source, dest = edge->destination;
+    if(!edge->directed) {
+        bridge = 2;
+        graph->bridgeBFS(dest, bridge, edgeName);
+    }
+    //  cerr << "\nMiddle\n";
+    graph->bridgeBFS(src, bridge, edgeName);
+    if(bridge && inOperation == 1) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Note", "Your graph would be disconnected, do you want to proceed?", QMessageBox::Yes | QMessageBox::No);
+        if(reply == QMessageBox::No)
+            return;
+        --inOperation;
+    }
+    // cerr << "\nBefore\n";
+    for (int i = 0; i < edges.size(); ++i) {
+        if (edges[i].second->name == edgeName) {
+            scene->removeItem(edges[i].first);
+            delete edges[i].first;
+            edges.removeAt(i);
+            break;
+        }
+    }
+    // cerr << "\nAfter\n";
+    if(!isUndo&&!fromDeleteCity)
+        lastOperations.push({4, "",v});
+    graph->deleteEdge(edgeName);
+
+    // cerr << "Last\n";
+}
+
+
+
+
+
+
+
+
+
+
+
+//                         **************************** Graph Requests ****************************
+
+void GraphPage::findTour() {
+
+    std::vector<std::string> tour = graph->DFS(ui.lineEdit_2->text().toStdString());
+    if (tour.empty()) {
+        QMessageBox::information(this, "No Tour", "Could not find a tour from the selected city.");
+        return;
+    }
+    QString tourStr="";
+    for (size_t i = 0; i < tour.size(); ++i) {
+        tourStr += QString::fromStdString(tour[i]);
+        if (i != tour.size() - 1) tourStr += " -> ";
+    }
+    Manager::getInstance()->curUser->recentSearch.push({"Find Tour","City : "+ui.lineEdit_2->text().toStdString()});
+    QMessageBox::information(this, "Exploration Tour", "🧭 Longest Tour:\n" + tourStr);
+    PathPage* pathPage = new PathPage(this,  tour, graph->getName());
+    pathPage->show();
+}
+
+
+void GraphPage::findFastest()
+{
+    Model::PathFinder getPath;
+
+    string start = ui.startCity->text().toStdString(), end = ui.endCity->text().toStdString();
+    if(start.empty() || end.empty() || !graph->nodeIsFound(start) || !graph->nodeIsFound(end)) {
+        QMessageBox::information(this, "Invalid Input", " Please Enter Existing Nodes!!" );
+        return;
+    }
+    Path path = getPath.findPath(start, end, graph->nodes, graph->edges, 0);
+    ui.distance->setPlainText(QString::number(path.totalCost) + " Kilometers");
+    ui.time->setPlainText(QString::number(path.totalTime) + " second");
+    QString pathStr = "";
+    for (int i = 0; i < path.Path_Nodes.size();i++) {
+
+        pathStr += QString::fromStdString(path.Path_Nodes[i]);
+        if(i != path.Path_Nodes.size()-1)
+            pathStr += " -> ";
+    }
+    Manager::getInstance()->curUser->recentSearch.push({"Fastest Path","{ start : " + start + " , end: " + end + " }"});
+    QMessageBox::information(this, "Fastest Path", " Fastest Path:\n" + pathStr);
+}
+
+void GraphPage::undo()
+{    if (lastOperations.empty())
+        return;
     int op;
     string lastNode;
     vector<Edge> lastEdges;
     tie(op, lastNode, lastEdges) = lastOperations.top();
-
+    cerr<<op;
     lastOperations.pop();
     isUndo = true;
     if (op == 1) { // addnode
-        deleteNode(lastNode);
+        ui.cityname->setText(QString::fromStdString(lastNode));
+        deleteCity();
     }
     else if (op == 2) { // addedge
-        deleteEdge(lastEdges[0].name);
+        ui.lineEdit->setText(QString ::fromStdString(lastEdges.back().name));
+        deleteEdge();
     }
     else if (op == 3) { // deletenode
-        addNode(lastNode);
+        ui.cityname->setText(QString::fromStdString(lastNode));
+        addCity();
+        cerr<<lastEdges.size();
         for (auto edge : lastEdges) {
-            addEdge(edge.name, edge.source, edge.destination, edge.length, edge.directed);
+            cerr<<edge.name;
+            ui.lineEdit->setText(QString::fromStdString(edge.name));
+            cerr<<edge.source;
+            ui.from->setText(QString::fromStdString(edge.source));
+            cerr<<edge.destination;
+            ui.to->setText(QString::fromStdString(edge.destination));
+            cerr<<edge.length;
+
+            string s=to_string(edge.length);
+            ui.len->setText(QString::number(edge.length));
+            cerr<<edge.directed;
+
+            ui.directed->setChecked(edge.directed);
+
+            cerr<<"addedge start";
+            addEdge();
         }
+        cerr<<"doneundo";
     }
     else { // deleteedge
         auto edge = lastEdges[0];
-        addEdge(edge.name, edge.source, edge.destination, edge.length, edge.directed);
+        ui.lineEdit->setText(QString::fromStdString(edge.name));
+        ui.from->setText(QString::fromStdString(edge.source));
+        ui.to->setText(QString::fromStdString(edge.destination));
+        string s=to_string(edge.length);
+        ui.len->setText(QString::number(edge.length));
+        ui.directed->setChecked(edge.directed);
+
+        addEdge();
     }
     isUndo = false;
+
+}
+void GraphPage::findShortest()
+{
+    Model::PathFinder getPath;
+    string start = ui.startCity->text().toStdString(), end = ui.endCity->text().toStdString();
+    if(start.empty() || end.empty() || !graph->nodeIsFound(start) || !graph->nodeIsFound(end)) {
+        QMessageBox::information(this, "Invalid Input", " Please Enter Existing Nodes!!" );
+        return;
+    }
+    Path path = getPath.findPath(start, end, graph->nodes, graph->edges, 1);
+    ui.distance->setPlainText(QString::number(path.totalCost) + " Kilometers");
+    ui.time->setPlainText(QString::number(path.totalTime)+ " second");
+    QString pathStr = "";
+
+    for (int i = 0; i < path.Path_Nodes.size();i++) {
+
+        pathStr += QString::fromStdString(path.Path_Nodes[i]);
+        if(i != path.Path_Nodes.size()-1)
+            pathStr += " -> ";
+    }
+    Manager::getInstance()->curUser->recentSearch.push({"Shortest Path",start + "--->" + end});
+    QMessageBox::information(this, "Shortest Path", " Shortest Path:\n" + pathStr);
+
 }
 
 
@@ -178,292 +525,117 @@ void Graph::undo() {
 
 
 
+//                         **************************** Our Helper Functions ****************************
 
-//                         **************************** Traverse ****************************
-
-
-bool Graph::bridgeBFS(string name, int &warning, string Removed) {
-    if (!nodeIsFound(name))
-        return std::cout << "node not found!\nEnter a valid node.\n", false;
-
-    queue<string> q;
-    unordered_map<string, bool> visited;
-    vector<string> result;
-
-    string src = name;
-    q.push(src);
-    visited[name] = true;
-    //Attached Node to the possible Bridge
-    string AttachedNode;
-    edges[Removed]->source == name? AttachedNode = edges[Removed]->destination : AttachedNode = edges[Removed]->source;
-    while (!q.empty()) {
-        string node = q.front();
-        q.pop();
-        result.push_back(node);
-        // Check if node can be reached from another way
-        if (node == AttachedNode) {
-            warning--;
-            cerr << "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK Found LLLLLLLLLLLLLLLLLLLLLLLLLLLL\n";
-            return true;
-            break;
-        }
-        for (auto edge: nodes[node]->edges) {
-            if (edge == Removed) continue;
-
-            string src = edges[edge]->source;
-            string dest = edges[edge]->destination;
-            string next_node;
-            if (edges[edge]->directed)
-                next_node = dest;
-            else
-                dest == node ? next_node = src : next_node = dest;
-
-            if (visited[next_node]) continue;
-            visited[next_node] = true;
-            q.push(next_node);
+QPointF GraphPage::getCityPosition(const QString& cityName) {
+    for (QGraphicsItem* item : scene->items()) {
+        QGraphicsTextItem* label = qgraphicsitem_cast<QGraphicsTextItem*>(item);
+        if (label && label->toPlainText() == cityName) {
+            return label->scenePos();
         }
     }
-    return false;
+    return QPointF(-1, -1);
 }
 
+bool GraphPage::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == ui.graphicsView->viewport() && event->type() == QEvent::MouseMove) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        QPointF scenePos2 = ui.graphicsView->mapToScene(mouseEvent->pos());
+        QString posText = QString("X: %1, Y: %2")
+                              .arg(scenePos2.x(), 0, 'f', 2)
+                              .arg(scenePos2.y(), 0, 'f', 2);
+        for (auto e : edges) {
+            if (e.first->contains(scenePos2)) {
+                QToolTip::showText(mouseEvent->globalPosition().toPoint(), QString::fromStdString(e.second->to_string()));
 
-
-
-vector<BfsNode*>Graph::BFS(string name) {
-    if (!nodeIsFound(name))
-        return std::cout << "node not found!\nEnter a valid node.\n", vector<BfsNode*>();
-
-    queue<BfsNode*> q;
-    unordered_map<string, bool> visited;
-    vector<BfsNode*> result;
-    BfsNode *src=new BfsNode(name,name,1);
-    q.push(src);
-    visited[name] = true;
-    while (!q.empty()) {
-        BfsNode *node = q.front();
-        q.pop();
-        result.push_back(node);
-        for (auto edge: nodes[node->name]->edges) {
-            string next_node = edges[edge]->destination;
-            if (visited[next_node]) continue;
-            BfsNode* next=new BfsNode(next_node,node->name,node->level+1);
-            visited[next_node] = true;
-            q.push(next);
-        }
-    }
-    return result;
-}
-
-void Graph::DFS(string current, unordered_map<string, bool>& visited,vector<string>& currentPath, vector<string>& longestPath) {
-    visited[current] = true;
-    currentPath.push_back(current);
-
-    for (auto edgeName : nodes[current]->edges) {
-        string neighbor;
-        if (current == edges[edgeName]->source)
-            neighbor = edges[edgeName]->destination;
-        else if (!edges[edgeName]->directed)
-            neighbor = edges[edgeName]->source;
-
-        if (!visited[neighbor])
-            DFS(neighbor, visited, currentPath, longestPath);
-    }
-    if (currentPath.size() > longestPath.size())
-        longestPath = currentPath;
-
-    visited[current] = false;
-    currentPath.pop_back();
-}
-vector<string> Graph::DFS(string start) {
-    vector<string> currentPath, longestPath;
-    unordered_map<string, bool> visited;
-
-    if (!nodeIsFound(start)) {
-        cout << "City not found!\n";
-        return longestPath;
-    }
-
-    DFS(start, visited, currentPath, longestPath);
-    return longestPath;
-}
-
-void Graph::tarjan(string node, string parent) {
-    dfn[node] = LowLink[node] = ndfn;
-    ndfn++;
-    for (auto edge : nodes[node]->edges) {
-        string child;
-        node == edges[edge]->destination ? child = edges[edge]->source : child = edges[edge]->destination;
-
-        if (dfn[child] == 0) {
-            tarjan(child, node);
-            LowLink[node] = min(LowLink[node], LowLink[child]);
-
-            // Mark the Bridges
-            if (dfn[child] == LowLink[child]) {
-                bridge[edge] = 1;
             }
 
-            // Mark the Articulation points
-            if (LowLink[child] >= dfn[node]) {
-                if (dfn[node] == 1 && root == false)
-                    root = true;
-                else
-                    artPoint[node] = 1;
-            }
-        }
-        else if (child != parent) {
-            LowLink[node] = min(LowLink[node], dfn[child]);
+
         }
     }
-    //Mark the bridges
-    // if (dfn[node] == LowLink[node] && parent != "") {
-    //     for (auto e : nodes[node]->edges) {
-    //         if (edges[e]->source == parent)
-    //             bridge[e] = true;
-    //     }
+    return QMainWindow::eventFilter(obj, event);
+}
+
+void GraphPage::drawAnimatedLine(const QPointF& start, const QPointF& end, QString name, QString from, QString to)
+{
+    animatedLine = scene->addLine(QLineF(start + QPointF(50, 50), start + QPointF(50, 50)), QPen(Qt::blue, 2, Qt::DashLine));
+    animatedLine->setZValue(-1);
+    QObject* proxy = new QObject(this);
+
+    QPropertyAnimation* animation = new QPropertyAnimation(proxy, "pos");
+    animation->setDuration(800);
+    animation->setStartValue(start + QPointF(50, 50));
+    animation->setEndValue(end+ QPointF(50, 50));
+    //animation->valueChanged();
+    connect(animation, &QPropertyAnimation::valueChanged, this, [=](const QVariant& value) {
+        QPointF currentEnd = value.toPointF();
+        animatedLine->setLine(QLineF(start + QPointF(50, 50), currentEnd));
+    });
+
+    animation->start();
+    edges.append(make_pair(animatedLine, graph->edges[name.toStdString()]));
+}
+
+
+
+
+
+
+
+
+
+//                         **************************** Buttons ****************************
+void GraphPage::on_pushButton_8_clicked()
+{
+    History *h=new History(Manager::getInstance()->curUser,this);
+    h->show();
+}
+
+
+void GraphPage::on_startTraverse_clicked()
+{
+    // vector<BfsNode*>v=graph->BFS(ui.lineEdit_4->text().toStdString());
+    // for(auto& bNode:v)
+    // {
+    //     for(auto city:cityGraphics)
+    //         if(bNode->name==city.first.toStdString())
+    //         {bNode->indx=city.second;
+    //             qDebug()<<bNode->name<<" "<<bNode->indx;
+    //         }
     // }
-    cout << "In function: " << bridge.size() << '\n';
 }
 
-
-
-
-
-
-
-
-//                         **************************** Getters ****************************
-
-double Graph::getTotalTraffic() {
-	double result = 0;
-	for (const auto &obj : edges)
-		result += obj.second->trafficLoad;
-	return result;
-}
-
-Node* Graph::getNode(string name) {
-	return nodes[name];
-}
-Edge* Graph::getEdge(string name) {
-	return edges[name];
-}
-
-int Graph::getID() {
-	return id;
-}
-
-string Graph::getName() {
-	return name;
-}
-
-
-
-
-
-
-
-
-
-//                         **************************** Testinnnngggggg ****************************
-void Graph::test() {
-    Graph* g = new Graph("graph1");
-    //Graph* g2 = new Graph("graph2");
-    g->addNode("Cairo");
-    g->addNode("Giza");
-    g->addNode("Alex");
-    g->addNode("Aswan");
-    g->addNode("Fayoum");
-    g->addNode("Suez");
-    g->addNode("Matrouh");
-    g->addNode("Luxor");
-
-    g->addEdge("First edge", "Cairo", "Giza", 4, false);
-    g->addEdge("second edge", "Giza", "Alex", 4, false);
-    g->addEdge("third edge", "Alex", "Cairo", 4, false);
-    g->addEdge("fourth edge", "Alex", "Matrouh", 4, false);
-    g->addEdge("Fifth edge", "Matrouh", "Suez", 4, false);
-    g->addEdge("six edge", "Suez", "Fayoum", 4, false);
-    g->addEdge("seven edge", "Fayoum", "Matrouh", 4, false);
-    g->addEdge("eight edge", "Fayoum", "Luxor", 4, false);
-
-    g->tarjan("Cairo", "");
-
-    g->deleteEdge("First edge");
-    /*cout << "third edge" << " " << g->bridge["third edge"] << endl;
-    cout << "First edge" << " " << g->bridge["First edge"] << endl;
-    cout << "second edge" << " " << g->bridge["second edge"] << endl;
-    cout << "fourth edge" << " " << g->bridge["fourth edge"] << endl;
-    cout << "Fifth edge" << " " << g->bridge["Fifth edge"] << endl;
-    cout << "six edge" << " " << g->bridge["six edge"] << endl;
-    cout << "seven edge" << " " << g->bridge["seven edge"] << endl;
-    cout << "eight edge" << " " << g->bridge["eight edge"] << endl;
-
-    cout << "----------------------------------------" << endl;
-
-    cout << "Alex" << " " << g->artPoint["Alex"] << endl;
-    cout << "Matrouh" << " " << g->artPoint["Matrouh"] << endl;
-    cout << "Fayoum" << " " << g->artPoint["Fayoum"] << endl;
-    cout << "Luxor" << " " << g->artPoint["Luxor"] << endl;
-    cout << "Cairo" << " " << g->artPoint["Cairo"] << endl;
-    cout << "Giza" << " " << g->artPoint["Giza"] << endl;*/
-
-
-    /*g->addEdge("First edge", "Cairo", "Giza", 4, false);
-    g->addEdge("second edge", "Cairo", "Alex", 4, false);
-    g->addEdge("fourth edge", "Matrouh", "Cairo", 4, true);
-    g->addEdge("third edge", "Alex", "Aswan", 4, false);*/
-    /*cout << '\n';
-    cout << g->toString();
-
-    g->deleteNode("Cairo");
-
-    cout << "########\n\n";
-    cout << g->toString();
-
-    vector <string> v;
-    string start = "Matrouh";
-    v = g->BFS(start);
-    std::cout << "\n\nFirst Test:\nSource is " << start << '\n';
-    for(int i = 0; i < v.size(); i++) {
-        cout << v[i];
-        if (i != v.size() - 1)
-            cout << " -> ";
+void GraphPage::on_traverseNode_clicked() {
+    string traverseNode = ui.findCitiesInput->text().toStdString();
+    if(!graph->nodeIsFound(traverseNode)) {
+        QMessageBox::critical(this,"Error", "Enter an existing city name!");
+        return;
     }
-
-    cout << "\n\n";
-    start = "Cairo";
-    std::cout << "Second Test:\nSource is " << start << '\n';
-    v = g->BFS(start);
-    for (int i = 0; i < v.size(); i++) {
-        cout << v[i];
-        if (i != v.size() - 1)
-            cout << " -> ";
+    Manager::getInstance()->curUser->recentSearch.push({"Traverse", "City : " + traverseNode});
+    Traverse *t = new Traverse(graph, cityGraphics, traverseNode, this);
+    t->show();
+}
+void GraphPage::on_find_Bridge_clicked() {
+    if(graph->edges.empty()) {
+        QMessageBox::warning(this, "Error", "NO EDGES FOUND");
     }
-    cout << "\n\n";
-
-    cout << "nodes: " << g->nodes.size() << ", edges: " << g->edges.size() << "\n\n";*/
-
+    QVector<string> bridges;
+    string s = "";
+    for(auto edge : graph->edges) {
+        int bridge = 1;
+        string src = edge.second->source, dest = edge.second->destination;
+        if(!edge.second->directed) {
+            bridge = 2;
+            graph->bridgeBFS(dest, bridge, edge.first);
+        }
+        graph->bridgeBFS(src, bridge, edge.first);
+        if(bridge) {
+            s += edge.first + ", ";
+        }
+    }
+    while(s.back() == ' ' || s.back() == ',')
+        s.pop_back();
+    QMessageBox::warning(this, "Bridges Found", QString::fromStdString(s));
 }
-// format-> id,name,$node(i),@edge(i)
-//node(i)-> name,childsnames..
-//edge(i)-> name,source,destination,std::to_string(length),std::to_string(directed)
-
-
-string Graph::toString() {
-    string toStringNode = "$";//
-    for (auto& i : nodes)
-        toStringNode += i.second->to_string();
-
-    string toStringEdges = "@";
-    for (auto& i : edges)
-        toStringEdges += i.second->to_string();
-
-    string res = std::to_string(id) + "," + name + "," + std::to_string(root) + "," + std::to_string(ndfn)+ toStringNode + toStringEdges;
-
-    //when load from file
-    //For every line after 1st line
-    //take first four words -> id,name,root,ndfn
-    //from after $ to before @ -> nodes loading first word after $ is the name of the node and rest of words neighbours (before @)
-    //from after @ to end -> every 5 words are edgeName,source,destination,length,directed
-    return res;
-}
+GraphPage::~GraphPage()
+{}
