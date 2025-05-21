@@ -1,4 +1,4 @@
-# MiniWasalni 🚗🗺️
+# MiniWasalni 🚗📺
 
 MiniWasalni is a C++ smart navigation system inspired by apps like **Wasalni**, designed to simulate city maps and routing using graph algorithms. It features a graphical interface built with **Qt**, enabling users to manage graphs, explore routes, and track path history.
 
@@ -33,3 +33,85 @@ MiniWasalni is a C++ smart navigation system inspired by apps like **Wasalni**, 
 - **History Page**: Undo actions and view previous path searches
 
 ---
+
+## 📂 File Structure Overview
+
+```
+/MiniWasalni/
+├── src/
+│   ├── main.cpp
+│   ├── graph.cpp / .h
+│   ├── ui/
+│   │   ├── login.ui
+│   │   ├── home.ui
+│   │   └── graph.ui
+├── assets/
+│   ├── icons/
+│   └── styles/
+├── data/
+│   ├── users.dat
+│   └── graphs/
+├── README.md
+└── LICENSE
+```
+
+> **Note**: File structure above is a template – adapt it based on your actual layout.
+
+---
+
+## 📦 Technologies Used
+
+- **C++ (Standard Library, STL)**
+- **Qt (GUI toolkit)** – [https://www.qt.io](https://www.qt.io)
+- **Graph Algorithms**: BFS, DFS, Dijkstra, Tarjan
+- **File I/O** for persistence
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Qt (5.x or 6.x)**  
+- **C++17+ compiler**
+
+### Build Instructions
+
+```bash
+git clone https://github.com/yourusername/miniwasalni.git
+cd miniwasalni
+qmake MiniWasalni.pro
+make
+./MiniWasalni
+```
+
+---
+
+## 🔐 Login System Details
+
+- New users must choose a unique username
+- Login errors include:
+  - Missing fields
+  - Invalid credentials
+  - Duplicate usernames during signup
+- Stored securely in local files
+
+---
+
+## 📚 Resources and References
+
+- Qt Documentation: https://doc.qt.io
+- Dijkstra’s Algorithm: https://brilliant.org/wiki/dijkstras-short-path-finder/
+- Tarjan’s Algorithm (Bridge-Finding): https://cp-algorithms.com/graph/bridge-searching.html
+- DFS & BFS: https://visualgo.net/en/dfsbfs
+
+---
+
+## 💼 Contributors
+- Hossam El-Nemr
+- Rehab Sobhy
+- Rawan Ahmed
+- Zeyad Sabry
+- Remon Ehab
+- Hussein Yahia
+- Anas Elwkel
