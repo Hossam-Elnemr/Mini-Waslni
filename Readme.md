@@ -52,11 +52,6 @@ MiniWasalni is a C++ smart navigation system inspired by apps like **Wasalni**, 
 │   ├── users.dat
 │   └── graphs/
 ├── README.md
-└── LICENSE
-```
-
-> **Note**: File structure above is a template – adapt it based on your actual layout.
-
 ---
 
 ## 📦 Technologies Used
