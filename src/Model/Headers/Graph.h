@@ -14,7 +14,7 @@ public:
 	static int numberOfGraphs;
     stack <tuple<int, string, vector<Edge>>> lastOperations;
 
-	unordered_map<string, Node*> nodes;
+    unordered_map<string, Node*> nodes;
     unordered_map<string, Edge*> edges;
     unordered_map<string, vector<pair<double, string>>> adj; // {u, {w, v}}
 
@@ -34,11 +34,8 @@ public:
     bool edgeIsFound(std::string);
 
 	//									Traverse
-	pair<Path, double> shortestPath(string source, string destination);
-	Path fastestPath(string source, string destination);
     void DFS(string current, unordered_map<string, bool>& visited,vector<string>& currentPath, vector<string>& longestPath);
-	vector<string> DFS(string name);
-
+    vector<string> DFS(string name);
     vector<BfsNode*> BFS(string name);
     bool bridgeBFS(string name, int &warning, string Removed = "");
     void tarjan(string node, string parent = "");
